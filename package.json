@@ -1,5 +1,6 @@
 {
   "name": "lilypond-pdf-preview",
+  "publisher": "lhl2617",
   "displayName": "Lilypond PDF Preview",
   "description": "",
   "version": "0.0.1",
@@ -95,12 +96,13 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "npm run compile && npm run pdfjs:install",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
+    "pretest": "npm run compile",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "pdfjs:install": "bash scripts/pdfjs.sh"
   },
   "devDependencies": {
     "@types/vscode": "1.56.0",
