@@ -8,11 +8,9 @@
   "plugins": ["@typescript-eslint", "prettier"],
   "rules": {
     "@typescript-eslint/naming-convention": "warn",
-    "@typescript-eslint/semi": "warn",
     "curly": "warn",
     "eqeqeq": "warn",
     "no-throw-literal": "warn",
-    "semi": "off",
     "prettier/prettier": "error"
   },
   "ignorePatterns": ["out", "dist", "**/*.d.ts"]
