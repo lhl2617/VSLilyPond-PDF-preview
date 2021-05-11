@@ -1,25 +1,98 @@
 {
   "name": "lilypond-pdf-preview",
-  "displayName": "lilypond-pdf-preview",
+  "displayName": "Lilypond PDF Preview",
   "description": "",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.14.0"
+    "vscode": "^1.56.0"
   },
   "categories": [
-    "Other"
+    "Visualization"
   ],
+  "extensionKind": [
+    "ui"
+  ],
+  "keywords": [
+    "lilypond",
+    "pdf",
+    "viewer"
+  ],
+  "license": "MIT",
+  "icon": "assets/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lhl2617/VSLilyPond-PDF-preview.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lhl2617/VSLilyPond-PDF-preview/issues"
+  },
   "activationEvents": [
-    "onCommand:lilypond-pdf-preview.helloWorld"
+    "onCustomEditor:lilypond.pdf.preview"
   ],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "lilypond-pdf-preview.helloWorld",
-        "title": "Hello World"
+    "capabilities": {
+      "untrustedWorkspaces": {
+        "supported": true
       }
-    ]
+    },
+    "customEditors": [
+      {
+        "viewType": "lilypond.pdf.preview",
+        "displayName": "Lilypond PDF Preview",
+        "selector": [
+          {
+            "filenamePattern": "*.pdf"
+          }
+        ]
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "PDF Preview",
+      "properties": {
+        "lilypond-pdf-preview.general.cursor": {
+          "markdownDescription": "The default cursor tool for preview.",
+          "type": "string",
+          "default": "select",
+          "enum": [
+            "select",
+            "hand"
+          ]
+        },
+        "lilypond-pdf-preview.general.scale": {
+          "markdownDescription": "The default zoom level for preview. Allowed values are `auto`, `page-actual`, `page-fit`, `page-width`, and 1-based scale values. (`1.0` means 100%)",
+          "type": "string",
+          "default": "auto",
+          "pattern": "^(\\d+(?:\\.\\d+)?|auto|page-actual|page-fit|page-width)$"
+        },
+        "lilypond-pdf-preview.general.sidebar": {
+          "markdownDescription": "Show the sidebar on load.",
+          "type": "boolean",
+          "default": false
+        },
+        "lilypond-pdf-preview.general.scrollMode": {
+          "markdownDescription": "The default scroll mode for preview.",
+          "type": "string",
+          "default": "vertical",
+          "enum": [
+            "vertical",
+            "horizontal",
+            "wrapped"
+          ]
+        },
+        "lilypond-pdf-preview.general.spreadMode": {
+          "markdownDescription": "The default spread mode for preview.",
+          "type": "string",
+          "default": "none",
+          "enum": [
+            "none",
+            "odd",
+            "even"
+          ]
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -30,7 +103,7 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "1.14.0",
+    "@types/vscode": "1.56.0",
     "@types/glob": "^7.1.3",
     "@types/mocha": "^8.0.4",
     "@types/node": "^12.11.7",
@@ -43,5 +116,6 @@
     "prettier": "^2.3.0",
     "typescript": "^4.1.3",
     "vscode-test": "^1.5.0"
-  }
+  },
+  "dependencies": {}
 }
