@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.1.4
+- Update docs
+
 ## 0.1.3
 - Update docs
 
