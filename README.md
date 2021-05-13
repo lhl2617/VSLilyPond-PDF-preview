@@ -6,7 +6,7 @@ Included in the [VSLilyPond](https://marketplace.visualstudio.com/items?itemName
 
 ## Features
 
-### Point and Click 📜
+### Point and Click 📄
 
 ![Point-and-Click](./docs/assets/gifs/pointAndClick.gif)
 
@@ -49,7 +49,7 @@ See the FAQ at [docs/FAQ.md](docs/FAQ.md).
 
 - Clone repository
   ```bash
-  git clone https://github.com/lhl2617/VSLilyPond
+  git clone https://github.com/lhl2617/VSLilyPond-PDF-preview
   ```
 - Install `npm` dependencies
   ```bash
