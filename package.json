@@ -1,47 +1,135 @@
 {
   "name": "lilypond-pdf-preview",
-  "displayName": "lilypond-pdf-preview",
+  "publisher": "lhl2617",
+  "displayName": "LilyPond PDF Preview",
   "description": "",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "engines": {
-    "vscode": "^1.56.0"
+    "vscode": "^1.46.0"
   },
   "categories": [
-    "Other"
+    "Visualization"
   ],
+  "extensionKind": [
+    "ui"
+  ],
+  "keywords": [
+    "lilypond",
+    "pdf",
+    "viewer"
+  ],
+  "license": "MIT",
+  "icon": "assets/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lhl2617/VSLilyPond-PDF-preview.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lhl2617/VSLilyPond-PDF-preview/issues"
+  },
   "activationEvents": [
-    "onCommand:lilypond-pdf-preview.helloWorld"
+    "onCustomEditor:lilypond.pdf.preview"
   ],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "lilypond-pdf-preview.helloWorld",
-        "title": "Hello World"
+    "capabilities": {
+      "untrustedWorkspaces": {
+        "supported": true
       }
-    ]
+    },
+    "customEditors": [
+      {
+        "viewType": "lilypond.pdf.preview",
+        "displayName": "Lilypond PDF Preview",
+        "selector": [
+          {
+            "filenamePattern": "*.pdf"
+          }
+        ]
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "PDF Preview",
+      "properties": {
+        "lilypond-pdf-preview.general.cursor": {
+          "markdownDescription": "The default cursor tool for preview.",
+          "type": "string",
+          "default": "select",
+          "enum": [
+            "select",
+            "hand"
+          ],
+          "group": "general"
+        },
+        "lilypond-pdf-preview.general.scale": {
+          "markdownDescription": "The default zoom level for preview. Allowed values are `auto`, `page-actual`, `page-fit`, `page-width`, and 1-based scale values. (`1.0` means 100%)",
+          "type": "string",
+          "default": "auto",
+          "pattern": "^(\\d+(?:\\.\\d+)?|auto|page-actual|page-fit|page-width)$"
+        },
+        "lilypond-pdf-preview.general.sidebar": {
+          "markdownDescription": "Show the sidebar on load.",
+          "type": "boolean",
+          "default": false,
+          "group": "general"
+        },
+        "lilypond-pdf-preview.general.scrollMode": {
+          "markdownDescription": "The default scroll mode for preview.",
+          "type": "string",
+          "default": "vertical",
+          "enum": [
+            "vertical",
+            "horizontal",
+            "wrapped"
+          ],
+          "group": "general"
+        },
+        "lilypond-pdf-preview.general.spreadMode": {
+          "markdownDescription": "The default spread mode for preview.",
+          "type": "string",
+          "default": "none",
+          "enum": [
+            "none",
+            "odd",
+            "even"
+          ],
+          "group": "general"
+        },
+        "lilypond-pdf-preview.pointAndClick.backgroundColor": {
+          "markdownDescription": "The background color (CSS styling) for the selection pointed by point-and-click.",
+          "type": "string",
+          "default": "#FFA500",
+          "group": "Point and Click"
+        },
+        "lilypond-pdf-preview.pointAndClick.highlightDuration": {
+          "markdownDescription": "The duration (in ms) in which the point-and-click selection remains highlighted.",
+          "type": "integer",
+          "default": 3000,
+          "group": "Point and Click"
+        }
+      }
+    }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "npm run docs:gen && npm run pdfjs:install && npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "pdfjs:install": "bash scripts/pdfjs.sh",
+    "docs:gen": "ts-node ./src/docs-gen/main.ts"
   },
   "devDependencies": {
-    "@types/vscode": "^1.56.0",
-    "@types/glob": "^7.1.3",
-    "@types/mocha": "^8.0.4",
     "@types/node": "^12.11.7",
+    "@types/vscode": "1.46.0",
     "@typescript-eslint/eslint-plugin": "^4.14.1",
     "@typescript-eslint/parser": "^4.14.1",
     "eslint": "^7.26.0",
     "eslint-plugin-prettier": "^3.4.0",
-    "glob": "^7.1.6",
-    "mocha": "^8.2.1",
     "prettier": "^2.3.0",
+    "ts-node": "^9.1.1",
     "typescript": "^4.1.3",
     "vscode-test": "^1.5.0"
-  }
+  },
+  "dependencies": {}
 }
