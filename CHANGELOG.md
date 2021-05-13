@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.1.2
+- Update docs
+
 ## 0.1.1
 - Cleanup
 - Update dependencies
