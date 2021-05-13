@@ -3,7 +3,7 @@
   "publisher": "lhl2617",
   "displayName": "Lilypond PDF Preview",
   "description": "",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.56.0"
   },
