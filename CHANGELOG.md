@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.1.6
+- Activate extension upon opening a `lilypond` language file
+
 ## 0.1.5
 - Add "workspace" to `extensionKind` (allowing the extension to run in remote environments).
 
