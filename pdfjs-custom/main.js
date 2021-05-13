@@ -75,12 +75,18 @@
 
   window.addEventListener(
     "load",
-    function () {
+    () => {
       const config = loadConfig()
+      const defaults = config.defaults
+      const vscodeAPI = acquireVsCodeApi()
       PDFViewerApplication.open(config.path)
       PDFViewerApplication.initializedPromise.then(() => {
-        const defaults = config.defaults
-        const optsOnLoad = () => {
+        PDFViewerApplication.eventBus.on("textlayerrendered", () => {
+          if (defaults.sidebar) {
+            PDFViewerApplication.pdfSidebar.open()
+          } else {
+            PDFViewerApplication.pdfSidebar.close()
+          }
           PDFViewerApplication.pdfCursorTools.switchTool(
             cursorTools(defaults.cursor)
           )
@@ -91,18 +97,8 @@
           PDFViewerApplication.pdfViewer.spreadMode = spreadMode(
             defaults.spreadMode
           )
-          if (defaults.sidebar) {
-            PDFViewerApplication.pdfSidebar.open()
-          } else {
-            PDFViewerApplication.pdfSidebar.close()
-          }
-          PDFViewerApplication.eventBus.off("documentloaded", optsOnLoad)
-        }
-        PDFViewerApplication.eventBus.on("documentloaded", optsOnLoad)
-        const vscodeAPI = acquireVsCodeApi()
-        PDFViewerApplication.eventBus.on("textlayerrendered", () =>
           handleTextEditLinks(vscodeAPI)
-        )
+        })
       })
       window.addEventListener("message", function () {
         window.PDFViewerApplication.open(config.path)
