@@ -10,6 +10,14 @@ Included in the [VSLilyPond](https://marketplace.visualstudio.com/items?itemName
 
 ![Point-and-Click](./docs/assets/gifs/pointAndClick.gif)
 
+## Usage Guide
+1. Open your LilyPond-compiled PDF in VSCode using the `LilyPond PDF Preview` option. 
+If you have multiple PDF previewer extensions, make sure that you choose `LilyPond PDF Preview` when opening the file.
+![Step 1](./docs/assets/img/usage-1.png)
+![Step 2](./docs/assets/img/usage-2.png)
+
+2. Click on any of the noteheads etc. to use point-and-click.
+
 ## Requirements
 
 * [VSCode](https://code.visualstudio.com/) 1.46.0 minimum
