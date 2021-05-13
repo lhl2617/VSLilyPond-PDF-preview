@@ -15,7 +15,7 @@ let lastActivatedDecorationType: vscode.TextEditorDecorationType | undefined
 const handleWebviewTextEditMessage = async (msg: WebviewTextEditMessage) => {
   /**
    * Get the text editor pointed to by `filepath`.
-   * First tries to find in the visible documents, then opened documents, before trying
+   * First tries to find in the visible documents before trying
    * to open one.
    */
   const getTextEditor = async (
