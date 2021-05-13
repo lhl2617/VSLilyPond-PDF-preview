@@ -32,6 +32,16 @@ echo "=== Removing default PDF preview from $viewer_js_path ==="
 sed -i 's/compressed.tracemonkey-pldi-09.pdf//g' $viewer_js_path
 echo "=== Successfully removed default PDF preview from $viewer_js_path ==="
 
+# Make textedit: a valid protocol in _isValidProtocol for pdf.js and pdf.worker.js
+pdfjs_pdfjs_path=$pdfjs_path/build/pdf.js
+pdfjs_pdfjsworker_path=$pdfjs_path/build/pdf.worker.js
+echo "=== Adding textedit: as a valid protocol in $pdfjs_pdfjs_path ==="
+sed -i 's/case "tel:":/case "tel:":\n    case "textedit:":/' $pdfjs_pdfjs_path
+echo "=== Successfully added textedit: as a valid protoocl in $pdfjs_pdfjs_path ==="
+echo "=== Adding textedit: as a valid protocol in $pdfjs_pdfjsworker_path ==="
+sed -i 's/case "tel:":/case "tel:":\n    case "textedit:":/' $pdfjs_pdfjsworker_path
+echo "=== Successfully added textedit: as a valid protoocl in $pdfjs_pdfjsworker_path ==="
+
 echo "=== Removing downloaded zip file $pdfjs_zip_path ==="
 rm -rf $pdfjs_zip_path
 

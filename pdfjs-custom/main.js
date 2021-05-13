@@ -37,6 +37,42 @@
         return -1
     }
   }
+
+  const handleTextEditLinks = (vscodeAPI) => {
+    const annotationLayerElems =
+      document.getElementsByClassName("annotationLayer")
+    for (const annotationsLayerElem of annotationLayerElems) {
+      const hyperlinks = annotationsLayerElem.getElementsByTagName("a")
+
+      const handleOnClick = (e) => {
+        const href = e.target.href
+        const regexpTextEdit =
+          /textedit:\/\/(?<filepath>.+):(?<lineStr>[0-9]+):(?<colStartStr>[0-9]+):(?<colEndStr>[0-9]+)/
+        const match = regexpTextEdit.exec(href)
+        if (match) {
+          e.preventDefault()
+
+          const { filepath, lineStr, colStartStr, colEndStr } = match.groups
+
+          const line = parseInt(lineStr)
+          const colStart = parseInt(colStartStr)
+          const colEnd = parseInt(colEndStr)
+          vscodeAPI.postMessage({
+            command: "textedit",
+            line: line,
+            filepath: filepath,
+            colStart: colStart,
+            colEnd: colEnd,
+          })
+        }
+      }
+
+      for (var i = 0; i < hyperlinks.length; i++) {
+        hyperlinks[i].onclick = handleOnClick
+      }
+    }
+  }
+
   window.addEventListener(
     "load",
     function () {
@@ -63,6 +99,10 @@
           PDFViewerApplication.eventBus.off("documentloaded", optsOnLoad)
         }
         PDFViewerApplication.eventBus.on("documentloaded", optsOnLoad)
+        const vscodeAPI = acquireVsCodeApi()
+        PDFViewerApplication.eventBus.on("textlayerrendered", () =>
+          handleTextEditLinks(vscodeAPI)
+        )
       })
       window.addEventListener("message", function () {
         window.PDFViewerApplication.open(config.path)

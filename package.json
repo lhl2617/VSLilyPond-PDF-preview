@@ -91,6 +91,16 @@
             "odd",
             "even"
           ]
+        },
+        "lilypond-pdf-preview.pointAndClick.backgroundColor": {
+          "markdownDescription": "The background color (CSS styling) for the selection pointed by point-and-click.",
+          "type": "string",
+          "default": "#FFA500"
+        },
+        "lilypond-pdf-preview.pointAndClick.highlightDuration": {
+          "markdownDescription": "The duration (in ms) in which the point-and-click duration remains highlighted.",
+          "type": "integer",
+          "default": 3000
         }
       }
     }

@@ -1,6 +1,8 @@
 import * as path from "path"
 import * as vscode from "vscode"
+import { extensionID } from "./consts"
 import { Disposable } from "./disposable"
+import { handleWebviewMessage } from "./webview-messages"
 
 function escapeAttribute(value: string | vscode.Uri): string {
   return value.toString().replace(/"/g, "&quot;")
@@ -73,6 +75,7 @@ export class PdfPreview extends Disposable {
     )
 
     this.webviewEditor.webview.html = this.getWebviewContents()
+    this.webviewEditor.webview.onDidReceiveMessage(handleWebviewMessage)
     this.update()
   }
 
@@ -103,7 +106,7 @@ export class PdfPreview extends Disposable {
       return webview.asWebviewUri(uri)
     }
 
-    const config = vscode.workspace.getConfiguration("lilypond-pdf-preview")
+    const config = vscode.workspace.getConfiguration(extensionID)
     const settings = {
       path: docPath.toString(),
       defaults: {
@@ -135,10 +138,10 @@ export class PdfPreview extends Disposable {
     )}">
 <link rel="stylesheet" href="${resolveAsUri("pdfjs", "web", "viewer.css")}">
 <link rel="stylesheet" href="${resolveAsUri("pdfjs-custom", "pdf.css")}">
+<script src="${resolveAsUri("pdfjs-custom", "main.js")}"></script>
 <script src="${resolveAsUri("pdfjs", "build", "pdf.js")}"></script>
 <script src="${resolveAsUri("pdfjs", "build", "pdf.worker.js")}"></script>
 <script src="${resolveAsUri("pdfjs", "web", "viewer.js")}"></script>
-<script src="${resolveAsUri("pdfjs-custom", "main.js")}"></script>
 </head>`
 
     const body = `<body tabindex="1" class="loadingInProgress">
