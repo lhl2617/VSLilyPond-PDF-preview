@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.1.5
+- Add "workspace" to `extensionKind` (allowing the extension to run in remote environments).
+
 ## 0.1.4
 - Update docs
 
