@@ -3,7 +3,7 @@
   "publisher": "lhl2617",
   "displayName": "LilyPond PDF Preview",
   "description": "Provides PDF Preview for LilyPond-generated PDFs. Supports point-and-click from PDF to source code.",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "engines": {
     "vscode": "^1.46.0"
   },
@@ -28,7 +28,8 @@
     "url": "https://github.com/lhl2617/VSLilyPond-PDF-preview/issues"
   },
   "activationEvents": [
-    "onCustomEditor:lilypond.pdf.preview"
+    "onCustomEditor:lilypond.pdf.preview",
+    "onLanguage:lilypond"
   ],
   "main": "./out/extension.js",
   "contributes": {
