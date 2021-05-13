@@ -49,7 +49,7 @@ See the FAQ at [docs/FAQ.md](docs/FAQ.md).
 
 - Clone repository
   ```bash
-  git clone https://github.com/lhl2617/VSLilyPond
+  git clone https://github.com/lhl2617/VSLilyPond-PDF-preview
   ```
 - Install `npm` dependencies
   ```bash
