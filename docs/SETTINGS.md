@@ -12,6 +12,14 @@ Type: `string`
 
 Default value: `select`
 
+### lilypond-pdf-preview.general.scale
+
+The default zoom level for preview. Allowed values are `auto`, `page-actual`, `page-fit`, `page-width`, and 1-based scale values. (`1.0` means 100%)
+
+Type: `string`
+
+Default value: `auto`
+
 ### lilypond-pdf-preview.general.sidebar
 
 Show the sidebar on load.
@@ -35,16 +43,6 @@ The default spread mode for preview.
 Type: `string`
 
 Default value: `none`
-
-## undefined
-
-### lilypond-pdf-preview.general.scale
-
-The default zoom level for preview. Allowed values are `auto`, `page-actual`, `page-fit`, `page-width`, and 1-based scale values. (`1.0` means 100%)
-
-Type: `string`
-
-Default value: `auto`
 
 ## Point and Click
 
