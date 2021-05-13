@@ -11,7 +11,7 @@
     "Visualization"
   ],
   "extensionKind": [
-    "ui"
+    "ui", "workspace"
   ],
   "keywords": [
     "lilypond",
