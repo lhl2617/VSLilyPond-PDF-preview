@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.1.7
+- Fix issue (#11) where options are not applied when the PDF is reloaded
+- Fix Configuration name (s/PDF Preview/LilyPond PDF Preview)
+
 ## 0.1.6
 - Activate extension upon opening a `lilypond` language file
 
