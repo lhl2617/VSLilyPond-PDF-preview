@@ -5,7 +5,7 @@
   "description": "",
   "version": "0.1.0",
   "engines": {
-    "vscode": "^1.56.0"
+    "vscode": "^1.46.0"
   },
   "categories": [
     "Visualization"
@@ -121,7 +121,7 @@
   },
   "devDependencies": {
     "@types/node": "^12.11.7",
-    "@types/vscode": "1.56.0",
+    "@types/vscode": "1.46.0",
     "@typescript-eslint/eslint-plugin": "^4.14.1",
     "@typescript-eslint/parser": "^4.14.1",
     "eslint": "^7.26.0",

@@ -10,7 +10,9 @@ Included in the [VSLilyPond](https://marketplace.visualstudio.com/items?itemName
 
 ![Point-and-Click](./docs/assets/gifs/pointAndClick.gif)
 
+## Requirements
 
+* [VSCode](https://code.visualstudio.com/) 1.46.0 minimum
 ## Extension Settings
 
 - Settings: See [docs/SETTINGS.md](docs/SETTINGS.md)
