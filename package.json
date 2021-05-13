@@ -51,7 +51,7 @@
     ],
     "configuration": {
       "type": "object",
-      "title": "PDF Preview",
+      "title": "LilyPond PDF Preview",
       "properties": {
         "lilypond-pdf-preview.general.cursor": {
           "markdownDescription": "The default cursor tool for preview.",
