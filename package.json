@@ -106,7 +106,7 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile && npm run pdfjs:install",
+    "vscode:prepublish": "npm run pdfjs:install && npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile",
