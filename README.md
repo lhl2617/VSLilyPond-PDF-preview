@@ -21,6 +21,8 @@ If you have multiple PDF previewer extensions, make sure that you choose `LilyPo
 ## Requirements
 
 * [VSCode](https://code.visualstudio.com/) 1.46.0 minimum
+- (Optional but recommended): [VSLilyPond](https://marketplace.visualstudio.com/items?itemName=lhl2617.vslilypond) -- Provides advanced LilyPond language support
+
 ## Extension Settings
 
 - Settings: See [docs/SETTINGS.md](docs/SETTINGS.md)
