@@ -1,70 +1,62 @@
-# lilypond-pdf-preview README
+# LilyPond PDF Preview
 
-This is the README for your extension "lilypond-pdf-preview". After writing up a brief description, we recommend including the following sections.
+Provides PDF Preview for LilyPond-generated PDFs. Supports point-and-click from PDF to source code.
+
+Included in the [VSLilyPond](https://marketplace.visualstudio.com/items?itemName=lhl2617.vslilypond) extension.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+### Point and Click 📜
 
-For example if there is an image subfolder under your extension project workspace:
+![Point-and-Click](./docs/assets/gifs/pointAndClick.gif)
 
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+- Settings: See [docs/SETTINGS.md](docs/SETTINGS.md)
 
-For example:
+## Issues & FAQ
 
-This extension contributes the following settings:
+Please submit issues in the [GitHub repository](https://github.com/lhl2617/VSLilyPond-PDF-preview).
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+See the FAQ at [docs/FAQ.md](docs/FAQ.md).
 
-## Known Issues
+## Contributing
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+- File bugs and/or feature requests in the [GitHub repository](https://github.com/lhl2617/VSLilyPond-PDF-preview)
+- Pull requests are welcome in the [GitHub repository](https://github.com/lhl2617/VSLilyPond-PDF-preview)
+- Buy me a Coffee ☕️ via [PayPal](https://paypal.me/lhl2617)
 
-## Release Notes
+## Development
 
-Users appreciate release notes as you update your extension.
+#### Requirements
 
-### 1.0.0
+- [VSCode](https://code.visualstudio.com/)
+- `npm`
 
-Initial release of ...
+#### Setup
 
-### 1.0.1
+- Clone repository
+  ```bash
+  git clone https://github.com/lhl2617/VSLilyPond
+  ```
+- Install `npm` dependencies
+  ```bash
+  npm i
+  ```
+- Install `pdf.js` -- note that this requires `bash` -- Windows users are advised to run this step on WSL2 (but extension development can remain on Windows.)
+  ```bash
+  npm run pdfjs:install
+  ```
+- Hit `F5` to run an Extension Development Host.
 
-Fixed issue #.
+  See [here](https://code.visualstudio.com/api/get-started/your-first-extension) for a detailed extension development guide.
 
-### 1.1.0
+#### Releasing
 
-Added features X, Y, and Z.
+Releasing is done automatically via GitHub Actions. Bump the version in `package.json` and update `CHANGELOG.md` before merging into the default branch.
 
------------------------------------------------------------------------------------------------------------
-## Following extension guidelines
+## Acknowledgements
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+- This extension is based on [`tomoki1207/vscode-pdf`](https://marketplace.visualstudio.com/items?itemName=tomoki1207.pdf), licensed under the MIT License.
+- This extension bundles [`pdf.js`](https://github.com/mozilla/pdf.js), licensed under the Apache License 2.0.
