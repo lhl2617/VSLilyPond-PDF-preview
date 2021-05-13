@@ -6,7 +6,7 @@ Included in the [VSLilyPond](https://marketplace.visualstudio.com/items?itemName
 
 ## Features
 
-### Point and Click 📜
+### Point and Click 📄
 
 ![Point-and-Click](./docs/assets/gifs/pointAndClick.gif)
 
