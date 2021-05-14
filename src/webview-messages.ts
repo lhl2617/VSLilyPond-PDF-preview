@@ -11,7 +11,7 @@ export const handleWebviewVSCodeMessage = (
   const { type } = msg
   if (type === "textedit") {
     handleWebviewVSCodeTextEditMessage(msg as WebviewVSCodeTextEditMessage)
-  } else if (type === "register-link") {
+  } else if (type === "reopen-as-text") {
     handleWebviewVSCodeReopenAsTextMessage(resource, webviewEditorViewColumn)
   }
 }
