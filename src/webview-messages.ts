@@ -2,7 +2,11 @@ import * as vscode from "vscode"
 import { extensionID } from "./consts"
 import { outputChannelName, outputToChannel } from "./output"
 import { WebviewVSCodeMessage, WebviewVSCodeTextEditMessage } from "./types"
-import { codeLocationToRange, codeLocationToSelection } from "./utils"
+import {
+  codeLocationToRange,
+  codeLocationToSelection,
+  getTextEditorFromFilePathWithVisiblePriority,
+} from "./utils"
 
 export class WebviewVSCodeMessageHandler {
   constructor() {}
@@ -17,29 +21,16 @@ export class WebviewVSCodeMessageHandler {
       this._handleWebviewVSCodeTextEditMessage(
         msg as WebviewVSCodeTextEditMessage
       )
+    } else {
+      console.error(
+        `Unknown WebviewVSCodeMessage type ${type} for message ${msg}`
+      )
     }
   }
 
   private _handleWebviewVSCodeTextEditMessage = async (
     msg: WebviewVSCodeTextEditMessage
   ) => {
-    /**
-     * Get the text editor pointed to by `filepath`.
-     * First tries to find in the visible documents before trying
-     * to open one.
-     */
-    const getTextEditor = async (
-      filepath: string
-    ): Promise<vscode.TextEditor> => {
-      const uri = vscode.Uri.file(filepath)
-      for (const textEditor of vscode.window.visibleTextEditors) {
-        if (textEditor.document.uri.fsPath === uri.fsPath) {
-          return textEditor
-        }
-      }
-      return await vscode.window.showTextDocument(uri)
-    }
-
     try {
       const config = vscode.workspace.getConfiguration(extensionID)
       const backgroundColor = config.get(
@@ -52,7 +43,9 @@ export class WebviewVSCodeMessageHandler {
       const { filepath } = codeLocation
       const selection = codeLocationToSelection(codeLocation)
       const selectionRange = codeLocationToRange(codeLocation)
-      const textEditor = await getTextEditor(filepath)
+      const textEditor = await getTextEditorFromFilePathWithVisiblePriority(
+        filepath
+      )
       textEditor.revealRange(selectionRange)
       textEditor.selection = selection
       if (this._lastActivatedDecorationType) {

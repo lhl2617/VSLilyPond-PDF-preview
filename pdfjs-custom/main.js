@@ -50,14 +50,14 @@
       const handleOnClick = (codeLocation) => (e) => {
         e.preventDefault()
         vscodeAPI.postMessage({
-          command: "textedit",
+          type: "textedit",
           codeLocation: codeLocation,
         })
       }
 
       // const registerLink = async (codeLocation, boundingClientRect) => {
       //   vscodeAPI.postMessage({
-      //     command: "register-link",
+      //     type: "register-link",
       //     codeLocation: codeLocation,
       //     boundingClientRect: boundingClientRect,
       //   })
