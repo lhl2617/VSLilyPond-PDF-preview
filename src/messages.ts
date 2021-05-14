@@ -1,16 +1,16 @@
 import * as vscode from "vscode"
-import { extensionID } from "../consts"
-import { outputChannelName, outputToChannel } from "../output"
+import { extensionID } from "./consts"
+import { outputChannelName, outputToChannel } from "./output"
 import {
   WebviewVSCodeMessage,
   WebviewVSCodeRegisterLinkMessage,
   WebviewVSCodeTextEditMessage,
-} from "../types"
+} from "./types"
 import {
   lilyPondCodeLocationToRange,
   lilyPondCodeLocationToSelection,
   getTextEditorFromFilePathWithVisiblePriority,
-} from "../utils"
+} from "./utils"
 
 export class WebviewVSCodeMessageHandler {
   private readonly _textEditMessageHandler = new TextEditMessageHandler()
