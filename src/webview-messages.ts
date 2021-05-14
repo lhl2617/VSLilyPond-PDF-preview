@@ -9,28 +9,30 @@ import {
 } from "./utils"
 
 export class WebviewVSCodeMessageHandler {
+  private readonly _textEditMessageHandler =
+    new WebviewVSCodeTextEditMessageHandler()
   constructor() {}
-
-  private _lastActivatedDecorationType:
-    | vscode.TextEditorDecorationType
-    | undefined
 
   public handleWebviewVSCodeMessage = async (msg: WebviewVSCodeMessage) => {
     const { type } = msg
     if (type === "textedit") {
-      this._handleWebviewVSCodeTextEditMessage(
-        msg as WebviewVSCodeTextEditMessage
-      )
+      this._textEditMessageHandler.handle(msg as WebviewVSCodeTextEditMessage)
     } else {
       console.error(
         `Unknown WebviewVSCodeMessage type ${type} for message ${msg}`
       )
     }
   }
+}
 
-  private _handleWebviewVSCodeTextEditMessage = async (
-    msg: WebviewVSCodeTextEditMessage
-  ) => {
+class WebviewVSCodeTextEditMessageHandler {
+  constructor() {}
+
+  private _lastActivatedDecorationType:
+    | vscode.TextEditorDecorationType
+    | undefined
+
+  public handle = async (msg: WebviewVSCodeTextEditMessage) => {
     try {
       const config = vscode.workspace.getConfiguration(extensionID)
       const backgroundColor = config.get(
