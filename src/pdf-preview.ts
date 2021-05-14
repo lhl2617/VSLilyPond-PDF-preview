@@ -2,7 +2,7 @@ import * as path from "path"
 import * as vscode from "vscode"
 import { extensionID } from "./consts"
 import { Disposable } from "./disposable"
-import { handleWebviewVSCodeMessage } from "./webview-messages"
+import { WebviewVSCodeMessageHandler } from "./webview-messages"
 
 function escapeAttribute(value: string | vscode.Uri): string {
   return value.toString().replace(/"/g, "&quot;")
@@ -12,6 +12,8 @@ type PreviewState = "Disposed" | "Visible" | "Active"
 
 export class PdfPreview extends Disposable {
   private _previewState: PreviewState = "Visible"
+  private _webviewVSCodeMessageHandler: WebviewVSCodeMessageHandler =
+    new WebviewVSCodeMessageHandler()
 
   constructor(
     private readonly extensionRoot: vscode.Uri,
@@ -29,9 +31,9 @@ export class PdfPreview extends Disposable {
     }
 
     this._register(
-      webviewEditor.webview.onDidReceiveMessage((message) => {
-        handleWebviewVSCodeMessage(message)
-      })
+      webviewEditor.webview.onDidReceiveMessage(
+        this._webviewVSCodeMessageHandler.handleWebviewVSCodeMessage
+      )
     )
 
     this._register(
