@@ -1,6 +1,6 @@
 export type WebviewVSCodeMessage = Required<{ type: WebviewVSCodeMessageType }>
 
-export type WebviewVSCodeMessageType = "textedit" | "register-link"
+export type WebviewVSCodeMessageType = "textedit" // | "register-link"
 
 export type WebviewVSCodeTextEditMessage = {
   type: "textedit"
@@ -14,8 +14,8 @@ export type CodeLocation = {
   colEnd: number
 }
 
-export type WebviewVSCodeRegisterLinkMessage = {
-  type: "register-link"
-  codeLocation: CodeLocation
-  boundingClientRect: DOMRect
-}
+// export type WebviewVSCodeRegisterLinkMessage = {
+//   type: "register-link"
+//   codeLocation: CodeLocation
+//   boundingClientRect: DOMRect
+// }

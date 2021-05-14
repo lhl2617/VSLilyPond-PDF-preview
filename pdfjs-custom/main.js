@@ -55,13 +55,13 @@
         })
       }
 
-      const registerLink = async (codeLocation, boundingClientRect) => {
-        vscodeAPI.postMessage({
-          command: "register-link",
-          codeLocation: codeLocation,
-          boundingClientRect: boundingClientRect,
-        })
-      }
+      // const registerLink = async (codeLocation, boundingClientRect) => {
+      //   vscodeAPI.postMessage({
+      //     command: "register-link",
+      //     codeLocation: codeLocation,
+      //     boundingClientRect: boundingClientRect,
+      //   })
+      // }
 
       for (var i = 0; i < hyperlinks.length; i++) {
         const match = regexpTextEdit.exec(hyperlinks[i].href)
@@ -79,7 +79,7 @@
           const boundingClientRect = hyperlinks[i].getBoundingClientRect()
           hyperlinks[i].title = "Open in VSCode"
           hyperlinks[i].onclick = handleOnClick(codeLocation)
-          registerLink(codeLocation, boundingClientRect)
+          // registerLink(codeLocation, boundingClientRect)
         }
       }
     }
