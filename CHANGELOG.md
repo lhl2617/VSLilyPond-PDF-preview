@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.1.8
+- Fix issue (#15) where this xtension causes VSLilyPond to be unable to start in a devcontainer
+  - Removed `extensionKind` to let this extension start in the workspace.
+
 ## 0.1.7
 - Fix issue (#11) where options are not applied when the PDF is reloaded
 - Fix Configuration name (s/PDF Preview/LilyPond PDF Preview)

@@ -1,5 +1,8 @@
 # LilyPond PDF Preview
 
+[![Visual Studio Marketplace](https://vsmarketplacebadge.apphb.com/version-short/lhl2617.lilypond-pdf-preview.svg)](https://marketplace.visualstudio.com/items?itemName=lhl2617.lilypond-pdf-preview)
+[![Visual Studio Marketplace](https://vsmarketplacebadge.apphb.com/installs/lhl2617.lilypond-pdf-preview.svg)](https://vsmarketplacebadge.apphb.com/installs/lhl2617.lilypond-pdf-preview.svg)
+
 Provides PDF Preview for LilyPond-generated PDFs. Supports point-and-click from PDF to source code.
 
 Included in the [VSLilyPond](https://marketplace.visualstudio.com/items?itemName=lhl2617.vslilypond) extension.
