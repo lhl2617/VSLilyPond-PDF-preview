@@ -44,7 +44,7 @@ const { isUnionTypeNode } = require("typescript");
   const regexpTextEdit =
     /textedit:\/\/(?<filepath>.+):(?<lineStr>[0-9]+):(?<colStartStr>[0-9]+):(?<colEndStr>[0-9]+)/
 
-  const handleTextEditLinks = (vscodeAPI) => {
+  const handleTextEditLinks = async (vscodeAPI) => {
     const annotationLayerElems =
       document.getElementsByClassName("annotationLayer")
     for (const annotationsLayerElem of annotationLayerElems) {
