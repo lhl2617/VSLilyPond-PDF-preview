@@ -55,13 +55,13 @@
         })
       }
 
-      // const registerLink = async (codeLocation, boundingClientRect) => {
-      //   vscodeAPI.postMessage({
-      //     type: "register-link",
-      //     codeLocation: codeLocation,
-      //     boundingClientRect: boundingClientRect,
-      //   })
-      // }
+      const registerLink = async (codeLocation, boundingClientRect) => {
+        vscodeAPI.postMessage({
+          type: "register-link",
+          codeLocation: codeLocation,
+          boundingClientRect: boundingClientRect,
+        })
+      }
 
       for (var i = 0; i < hyperlinks.length; i++) {
         const match = regexpTextEdit.exec(hyperlinks[i].href)

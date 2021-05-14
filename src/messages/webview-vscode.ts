@@ -1,12 +1,12 @@
 import * as vscode from "vscode"
-import { extensionID } from "./consts"
-import { outputChannelName, outputToChannel } from "./output"
-import { WebviewVSCodeMessage, WebviewVSCodeTextEditMessage } from "./types"
+import { extensionID } from "../consts"
+import { outputChannelName, outputToChannel } from "../output"
+import { WebviewVSCodeMessage, WebviewVSCodeTextEditMessage } from "../types"
 import {
   codeLocationToRange,
   codeLocationToSelection,
   getTextEditorFromFilePathWithVisiblePriority,
-} from "./utils"
+} from "../utils"
 
 export class WebviewVSCodeMessageHandler {
   private readonly _textEditMessageHandler =

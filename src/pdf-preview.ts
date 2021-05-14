@@ -2,7 +2,7 @@ import * as path from "path"
 import * as vscode from "vscode"
 import { extensionID } from "./consts"
 import { Disposable } from "./disposable"
-import { WebviewVSCodeMessageHandler } from "./webview-messages"
+import { WebviewVSCodeMessageHandler } from "./messages/webview-vscode"
 
 function escapeAttribute(value: string | vscode.Uri): string {
   return value.toString().replace(/"/g, "&quot;")
