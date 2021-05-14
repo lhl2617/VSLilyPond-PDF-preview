@@ -6,13 +6,13 @@ import { WebviewVSCodeMessage, WebviewVSCodeTextEditMessage } from "./types"
 export const handleWebviewVSCodeMessage = (
   msg: WebviewVSCodeMessage,
   resource: vscode.Uri,
-  webviewEditor: vscode.WebviewPanel
+  webviewEditorViewColumn: vscode.ViewColumn | undefined
 ) => {
   const { type } = msg
   if (type === "textedit") {
     handleWebviewVSCodeTextEditMessage(msg as WebviewVSCodeTextEditMessage)
   } else if (type === "register-link") {
-    handleWebviewVSCodeReopenAsTextMessage(resource, webviewEditor)
+    handleWebviewVSCodeReopenAsTextMessage(resource, webviewEditorViewColumn)
   }
 }
 
@@ -79,12 +79,12 @@ const handleWebviewVSCodeTextEditMessage = async (
 
 const handleWebviewVSCodeReopenAsTextMessage = (
   resource: vscode.Uri,
-  webviewEditor: vscode.WebviewPanel
+  webviewEditorViewColumn: vscode.ViewColumn | undefined
 ) => {
   vscode.commands.executeCommand(
     "vscode.openWith",
     resource,
     "default",
-    webviewEditor.viewColumn
+    webviewEditorViewColumn
   )
 }
