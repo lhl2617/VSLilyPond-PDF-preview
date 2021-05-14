@@ -2,6 +2,7 @@ import * as vscode from "vscode"
 import { extensionID } from "./consts"
 import { outputChannelName, outputToChannel } from "./output"
 import { WebviewVSCodeMessage, WebviewVSCodeTextEditMessage } from "./types"
+import { codeLocationToRange, codeLocationToSelection } from "./utils"
 
 export class WebviewVSCodeMessageHandler {
   constructor() {}
@@ -47,18 +48,10 @@ export class WebviewVSCodeMessageHandler {
       const highlightDuration = config.get(
         "pointAndClick.highlightDuration"
       ) as number
-      const { filepath, line, colStart, colEnd } = msg.codeLocation
-      const lineNum = line - 1 // 1-indexed
-      const selection = new vscode.Selection(
-        new vscode.Position(lineNum, colStart),
-        new vscode.Position(lineNum, colEnd)
-      )
-      const selectionRange = new vscode.Range(
-        lineNum,
-        colStart,
-        lineNum,
-        colEnd
-      )
+      const { codeLocation } = msg
+      const { filepath } = codeLocation
+      const selection = codeLocationToSelection(codeLocation)
+      const selectionRange = codeLocationToRange(codeLocation)
       const textEditor = await getTextEditor(filepath)
       textEditor.revealRange(selectionRange)
       textEditor.selection = selection
