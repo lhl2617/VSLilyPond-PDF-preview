@@ -30,7 +30,7 @@ export class PdfPreview extends Disposable {
 
     this._register(
       webviewEditor.webview.onDidReceiveMessage((message) => {
-        handleWebviewVSCodeMessage(message, resource, webviewEditor.viewColumn)
+        handleWebviewVSCodeMessage(message)
       })
     )
 

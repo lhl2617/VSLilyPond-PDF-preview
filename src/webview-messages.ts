@@ -3,16 +3,10 @@ import { extensionID } from "./consts"
 import { outputChannelName, outputToChannel } from "./output"
 import { WebviewVSCodeMessage, WebviewVSCodeTextEditMessage } from "./types"
 
-export const handleWebviewVSCodeMessage = (
-  msg: WebviewVSCodeMessage,
-  resource: vscode.Uri,
-  webviewEditorViewColumn: vscode.ViewColumn | undefined
-) => {
+export const handleWebviewVSCodeMessage = (msg: WebviewVSCodeMessage) => {
   const { type } = msg
   if (type === "textedit") {
     handleWebviewVSCodeTextEditMessage(msg as WebviewVSCodeTextEditMessage)
-  } else if (type === "reopen-as-text") {
-    handleWebviewVSCodeReopenAsTextMessage(resource, webviewEditorViewColumn)
   }
 }
 
@@ -75,16 +69,4 @@ const handleWebviewVSCodeTextEditMessage = async (
     )
     outputToChannel(`[ERROR]: ${err}`, true)
   }
-}
-
-const handleWebviewVSCodeReopenAsTextMessage = (
-  resource: vscode.Uri,
-  webviewEditorViewColumn: vscode.ViewColumn | undefined
-) => {
-  vscode.commands.executeCommand(
-    "vscode.openWith",
-    resource,
-    "default",
-    webviewEditorViewColumn
-  )
 }
