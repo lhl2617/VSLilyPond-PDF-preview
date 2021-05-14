@@ -10,9 +10,6 @@
   "categories": [
     "Visualization"
   ],
-  "extensionKind": [
-    "ui", "workspace"
-  ],
   "keywords": [
     "lilypond",
     "pdf",
