@@ -3,6 +3,7 @@ import * as vscode from "vscode"
 import { extensionID } from "./consts"
 import { Disposable } from "./disposable"
 import { WebviewVSCodeMessageHandler } from "./messages/webview-vscode"
+import { VSCodeWebviewMessage, WebviewVSCodeRegisterLinkMessage } from "./types"
 
 function escapeAttribute(value: string | vscode.Uri): string {
   return value.toString().replace(/"/g, "&quot;")
@@ -11,16 +12,21 @@ function escapeAttribute(value: string | vscode.Uri): string {
 type PreviewState = "Disposed" | "Visible" | "Active"
 
 export class PdfPreview extends Disposable {
+  public fsPath: string
   private _previewState: PreviewState = "Visible"
-  private _webviewVSCodeMessageHandler: WebviewVSCodeMessageHandler =
-    new WebviewVSCodeMessageHandler()
+  private _webviewVSCodeMessageHandler: WebviewVSCodeMessageHandler
 
   constructor(
     private readonly extensionRoot: vscode.Uri,
     private readonly resource: vscode.Uri,
-    private readonly webviewEditor: vscode.WebviewPanel
+    private readonly webviewEditor: vscode.WebviewPanel,
+    registerLinkMessageHandler: (msg: WebviewVSCodeRegisterLinkMessage) => any
   ) {
     super()
+    this.fsPath = resource.fsPath
+    this._webviewVSCodeMessageHandler = new WebviewVSCodeMessageHandler(
+      registerLinkMessageHandler
+    )
     const resourceRoot = resource.with({
       path: resource.path.replace(/\/[^/]+?\.\w+$/, "/"),
     })
@@ -68,6 +74,14 @@ export class PdfPreview extends Disposable {
 
     this.webviewEditor.webview.html = this.getWebviewContents()
     this.update()
+  }
+
+  public async postMessageToWebview(msg: VSCodeWebviewMessage) {
+    this.webviewEditor.webview.postMessage(msg)
+  }
+
+  public async revealWebview() {
+    this.webviewEditor.reveal()
   }
 
   private reload(): void {

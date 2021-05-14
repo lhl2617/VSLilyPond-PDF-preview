@@ -55,11 +55,11 @@
         })
       }
 
-      const registerLink = async (codeLocation, boundingClientRect) => {
+      const registerLink = async (codeLocation, pdfLocation) => {
         vscodeAPI.postMessage({
           type: "register-link",
           codeLocation: codeLocation,
-          boundingClientRect: boundingClientRect,
+          pdfLocation: boundingClipdfLocationentRect,
         })
       }
 
@@ -76,10 +76,10 @@
             colStart: colStart,
             colEnd: colEnd,
           }
-          const boundingClientRect = hyperlinks[i].getBoundingClientRect()
+          const pdfLocation = hyperlinks[i].getBoundingClientRect()
           hyperlinks[i].title = "Open in VSCode"
           hyperlinks[i].onclick = handleOnClick(codeLocation)
-          // registerLink(codeLocation, boundingClientRect)
+          registerLink(codeLocation, pdfLocation)
         }
       }
     }

@@ -7,33 +7,43 @@ export type WebviewVSCodeMessageType = "textedit" | "register-link"
 
 export type WebviewVSCodeTextEditMessage = {
   type: "textedit"
-  codeLocation: CodeLocation
+  codeLocation: LilyPondCodeLocation
 }
 
 export type WebviewVSCodeRegisterLinkMessage = {
   type: "register-link"
-  codeLocation: CodeLocation
-  boundingClientRect: DOMRect
-}
+} & RegisterLinkContents
 
 // =================
 // VSCode -> Webview
 // =================
-export type VSCodeWebviewMessage = Required<{ type: WebviewVSCodeMessageType }>
+export type VSCodeWebviewMessage = Required<{ type: VSCodeWebviewMessageType }>
 
 export type VSCodeWebviewMessageType = "goto"
 
-export type VSCodeWebviewGotoMessage = {
+export type VSCodeWebviewGoToMessage = {
   type: "goto"
-  boundingClientRect: DOMRect
+  pdfLocation: PDFLocation
 }
 
 // =============
 // Utility types
 // =============
-export type CodeLocation = {
-  filepath: string
-  line: number
+export type LilyPondCodeLocation = {
+  filepath: LilyPondCodeFilePath
+} & LilyPondFileCodeLocation
+
+export type LilyPondFileCodeLocation = {
+  line: number // 1-indexed: need to decrement if use in VSCode
   colStart: number
   colEnd: number
 }
+
+export type LilyPondCodeFilePath = string
+
+export type RegisterLinkContents = {
+  codeLocation: LilyPondCodeLocation
+  pdfLocation: PDFLocation
+}
+
+export type PDFLocation = DOMRect

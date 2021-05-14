@@ -1,22 +1,22 @@
-import { CodeLocation } from "./types"
+import { LilyPondCodeLocation } from "./types"
 import * as vscode from "vscode"
 
-export const codeLocationToSelection = (
-  codeLocation: CodeLocation
+export const lilyPondCodeLocationToSelection = (
+  codeLocation: LilyPondCodeLocation
 ): vscode.Selection => {
   const { line, colStart, colEnd } = codeLocation
-  const lineNum = line - 1 // 1-indexed
+  const lineNum = line - 1
   return new vscode.Selection(
     new vscode.Position(lineNum, colStart),
     new vscode.Position(lineNum, colEnd)
   )
 }
 
-export const codeLocationToRange = (
-  codeLocation: CodeLocation
+export const lilyPondCodeLocationToRange = (
+  codeLocation: LilyPondCodeLocation
 ): vscode.Range => {
   const { line, colStart, colEnd } = codeLocation
-  const lineNum = line - 1 // 1-indexed
+  const lineNum = line - 1
   return new vscode.Range(lineNum, colStart, lineNum, colEnd)
 }
 

@@ -1,22 +1,31 @@
 import * as vscode from "vscode"
 import { extensionID } from "../consts"
 import { outputChannelName, outputToChannel } from "../output"
-import { WebviewVSCodeMessage, WebviewVSCodeTextEditMessage } from "../types"
 import {
-  codeLocationToRange,
-  codeLocationToSelection,
+  WebviewVSCodeMessage,
+  WebviewVSCodeRegisterLinkMessage,
+  WebviewVSCodeTextEditMessage,
+} from "../types"
+import {
+  lilyPondCodeLocationToRange,
+  lilyPondCodeLocationToSelection,
   getTextEditorFromFilePathWithVisiblePriority,
 } from "../utils"
 
 export class WebviewVSCodeMessageHandler {
-  private readonly _textEditMessageHandler =
-    new WebviewVSCodeTextEditMessageHandler()
-  constructor() {}
+  private readonly _textEditMessageHandler = new TextEditMessageHandler()
+  constructor(
+    private readonly _handleRegisterLinkMessage: (
+      msg: WebviewVSCodeRegisterLinkMessage
+    ) => any
+  ) {}
 
   public handleWebviewVSCodeMessage = async (msg: WebviewVSCodeMessage) => {
     const { type } = msg
     if (type === "textedit") {
       this._textEditMessageHandler.handle(msg as WebviewVSCodeTextEditMessage)
+    } else if (type === "register-link") {
+      this._handleRegisterLinkMessage(msg as WebviewVSCodeRegisterLinkMessage)
     } else {
       console.error(
         `Unknown WebviewVSCodeMessage type ${type} for message ${msg}`
@@ -25,7 +34,7 @@ export class WebviewVSCodeMessageHandler {
   }
 }
 
-class WebviewVSCodeTextEditMessageHandler {
+class TextEditMessageHandler {
   constructor() {}
 
   private _lastActivatedDecorationType:
@@ -43,8 +52,8 @@ class WebviewVSCodeTextEditMessageHandler {
       ) as number
       const { codeLocation } = msg
       const { filepath } = codeLocation
-      const selection = codeLocationToSelection(codeLocation)
-      const selectionRange = codeLocationToRange(codeLocation)
+      const selection = lilyPondCodeLocationToSelection(codeLocation)
+      const selectionRange = lilyPondCodeLocationToRange(codeLocation)
       const textEditor = await getTextEditorFromFilePathWithVisiblePriority(
         filepath
       )
