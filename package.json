@@ -25,8 +25,7 @@
     "url": "https://github.com/lhl2617/VSLilyPond-PDF-preview/issues"
   },
   "activationEvents": [
-    "onCustomEditor:lilypond.pdf.preview",
-    "onLanguage:lilypond"
+    "onCustomEditor:lilypond.pdf.preview"
   ],
   "main": "./out/extension.js",
   "contributes": {
