@@ -2,7 +2,7 @@ import * as path from "path"
 import * as vscode from "vscode"
 import { extensionID } from "./consts"
 import { Disposable } from "./disposable"
-import { handleWebviewMessage } from "./webview-messages"
+import { handleWebviewVSCodeMessage } from "./webview-messages"
 
 function escapeAttribute(value: string | vscode.Uri): string {
   return value.toString().replace(/"/g, "&quot;")
@@ -75,7 +75,7 @@ export class PdfPreview extends Disposable {
     )
 
     this.webviewEditor.webview.html = this.getWebviewContents()
-    this.webviewEditor.webview.onDidReceiveMessage(handleWebviewMessage)
+    this.webviewEditor.webview.onDidReceiveMessage(handleWebviewVSCodeMessage)
     this.update()
   }
 

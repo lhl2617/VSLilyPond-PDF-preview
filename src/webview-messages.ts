@@ -1,18 +1,20 @@
 import * as vscode from "vscode"
 import { extensionID } from "./consts"
 import { outputChannelName, outputToChannel } from "./output"
-import { WebviewMessage, WebviewTextEditMessage } from "./types"
+import { WebviewVSCodeMessage, WebviewVSCodeTextEditMessage } from "./types"
 
-export const handleWebviewMessage = (msg: WebviewMessage) => {
+export const handleWebviewVSCodeMessage = (msg: WebviewVSCodeMessage) => {
   const { command } = msg
   if (command === "textedit") {
-    handleWebviewTextEditMessage(msg as WebviewTextEditMessage)
+    handleWebviewVSCodeTextEditMessage(msg as WebviewVSCodeTextEditMessage)
   }
 }
 
 let lastActivatedDecorationType: vscode.TextEditorDecorationType | undefined
 
-const handleWebviewTextEditMessage = async (msg: WebviewTextEditMessage) => {
+const handleWebviewVSCodeTextEditMessage = async (
+  msg: WebviewVSCodeTextEditMessage
+) => {
   /**
    * Get the text editor pointed to by `filepath`.
    * First tries to find in the visible documents before trying

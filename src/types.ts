@@ -1,8 +1,8 @@
-export type WebviewMessage = Required<{ command: WebviewCommand }>
+export type WebviewVSCodeMessage = Required<{ command: WebviewVSCodeCommand }>
 
-export type WebviewCommand = "textedit"
+export type WebviewVSCodeCommand = "textedit"
 
-export type WebviewTextEditMessage = {
+export type WebviewVSCodeTextEditMessage = {
   command: "textedit"
   filepath: string
   line: number
