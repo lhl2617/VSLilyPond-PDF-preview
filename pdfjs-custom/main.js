@@ -59,7 +59,7 @@
         vscodeAPI.postMessage({
           type: "register-link",
           codeLocation: codeLocation,
-          pdfLocation: boundingClipdfLocationentRect,
+          pdfLocation: pdfLocation,
         })
       }
 
@@ -181,8 +181,14 @@
           }
         })
       })
-      window.addEventListener("message", function () {
-        window.PDFViewerApplication.open(config.path)
+      window.addEventListener("message", (e) => {
+        const message = e.data
+        const type = message.type
+        if (type === "goto") {
+          console.log(`Received goto: ${JSON.stringify(message)}`)
+        } else {
+          console.error(`Unknown message: ${JSON.stringify(message)}`)
+        }
       })
     },
     { once: true }

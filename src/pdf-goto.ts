@@ -9,7 +9,10 @@ type CursorInfo = {
 
 export class GoToPDELocationHandler {
   constructor(
-    private goToHandler: (pdfFsPath: string, pdfLocation: PDFLocation) => any
+    private goToHandler: (
+      pdfFsPath: string,
+      pdfLocation: PDFLocation
+    ) => Promise<any>
   ) {}
 
   private _linkRepository: Record<
@@ -46,6 +49,11 @@ export class GoToPDELocationHandler {
         pdfLocation,
         pdfFsPath,
       })
+      // console.log(
+      //   `Registered ${JSON.stringify(msg)} into ${JSON.stringify(
+      //     this._linkRepository
+      //   )}`
+      // )
     }
 
   private _getCursorInfo = (): CursorInfo => {
@@ -107,6 +115,6 @@ export class GoToPDELocationHandler {
     const cursorInfo = this._getCursorInfo()
     const { pdfLocation, pdfFsPath } =
       this._getPDFPathAndLocationFromCursor(cursorInfo)
-    this.goToHandler(pdfFsPath, pdfLocation)
+    await this.goToHandler(pdfFsPath, pdfLocation)
   }
 }

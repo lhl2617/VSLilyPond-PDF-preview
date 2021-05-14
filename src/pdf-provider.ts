@@ -56,7 +56,7 @@ export class PdfCustomProvider implements vscode.CustomReadonlyEditorProvider {
   private async goToPDFLocation(pdfFsPath: string, pdfLocation: PDFLocation) {
     // find the preview with the right pdfFsPath
     let preview: PdfPreview | undefined
-    for (const p of this._previews) {
+    for (const p of this._previews.values()) {
       if (p.fsPath === pdfFsPath) {
         preview = p
         break
