@@ -64,7 +64,6 @@
       }
 
       for (var i = 0; i < hyperlinks.length; i++) {
-        console.log(hyperlinks[i])
         const match = regexpTextEdit.exec(hyperlinks[i].href)
         if (match) {
           const { filepath, lineStr, colStartStr, colEndStr } = match.groups
