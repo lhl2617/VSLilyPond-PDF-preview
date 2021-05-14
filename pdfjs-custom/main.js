@@ -1,5 +1,8 @@
 "use strict"
-;(function () {
+;
+const { isUnionTypeNode } = require("typescript");
+
+(function () {
   function loadConfig() {
     const elem = document.getElementById("pdf-preview-config")
     if (elem) {
@@ -38,37 +41,39 @@
     }
   }
 
+  const regexpTextEdit =
+    /textedit:\/\/(?<filepath>.+):(?<lineStr>[0-9]+):(?<colStartStr>[0-9]+):(?<colEndStr>[0-9]+)/
+
   const handleTextEditLinks = (vscodeAPI) => {
     const annotationLayerElems =
       document.getElementsByClassName("annotationLayer")
     for (const annotationsLayerElem of annotationLayerElems) {
       const hyperlinks = annotationsLayerElem.getElementsByTagName("a")
 
-      const handleOnClick = (e) => {
-        const href = e.target.href
-        const regexpTextEdit =
-          /textedit:\/\/(?<filepath>.+):(?<lineStr>[0-9]+):(?<colStartStr>[0-9]+):(?<colEndStr>[0-9]+)/
-        const match = regexpTextEdit.exec(href)
-        if (match) {
-          e.preventDefault()
+      const handleOnClick = (match) => (e) => {
+        e.preventDefault()
 
-          const { filepath, lineStr, colStartStr, colEndStr } = match.groups
+        const { filepath, lineStr, colStartStr, colEndStr } = match.groups
 
-          const line = parseInt(lineStr)
-          const colStart = parseInt(colStartStr)
-          const colEnd = parseInt(colEndStr)
-          vscodeAPI.postMessage({
-            command: "textedit",
-            line: line,
-            filepath: filepath,
-            colStart: colStart,
-            colEnd: colEnd,
-          })
-        }
+        const line = parseInt(lineStr)
+        const colStart = parseInt(colStartStr)
+        const colEnd = parseInt(colEndStr)
+        vscodeAPI.postMessage({
+          command: "textedit",
+          line: line,
+          filepath: filepath,
+          colStart: colStart,
+          colEnd: colEnd,
+        })
       }
 
       for (var i = 0; i < hyperlinks.length; i++) {
-        hyperlinks[i].onclick = handleOnClick
+        console.log(hyperlinks[i])
+        const match = regexpTextEdit.exec(hyperlinks[i].href)
+        if (match) {
+          hyperlinks[i].onclick = handleOnClick(match)
+          hyperlinks[i].title = "Open in VSCode"
+        }
       }
     }
   }
