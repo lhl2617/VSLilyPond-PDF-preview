@@ -30,17 +30,7 @@ export class PdfPreview extends Disposable {
 
     this._register(
       webviewEditor.webview.onDidReceiveMessage((message) => {
-        switch (message.type) {
-          case "reopen-as-text": {
-            vscode.commands.executeCommand(
-              "vscode.openWith",
-              resource,
-              "default",
-              webviewEditor.viewColumn
-            )
-            break
-          }
-        }
+        handleWebviewVSCodeMessage(message, resource, webviewEditor)
       })
     )
 
@@ -75,7 +65,6 @@ export class PdfPreview extends Disposable {
     )
 
     this.webviewEditor.webview.html = this.getWebviewContents()
-    this.webviewEditor.webview.onDidReceiveMessage(handleWebviewVSCodeMessage)
     this.update()
   }
 

@@ -47,20 +47,19 @@
     for (const annotationsLayerElem of annotationLayerElems) {
       const hyperlinks = annotationsLayerElem.getElementsByTagName("a")
 
-      const handleOnClick = (match) => (e) => {
+      const handleOnClick = (codeLocation) => (e) => {
         e.preventDefault()
-
-        const { filepath, lineStr, colStartStr, colEndStr } = match.groups
-
-        const line = parseInt(lineStr)
-        const colStart = parseInt(colStartStr)
-        const colEnd = parseInt(colEndStr)
         vscodeAPI.postMessage({
           command: "textedit",
-          line: line,
-          filepath: filepath,
-          colStart: colStart,
-          colEnd: colEnd,
+          codeLocation: codeLocation,
+        })
+      }
+
+      const registerLink = async (codeLocation, boundingClientRect) => {
+        vscodeAPI.postMessage({
+          command: "register-link",
+          codeLocation: codeLocation,
+          boundingClientRect: boundingClientRect,
         })
       }
 
@@ -68,8 +67,20 @@
         console.log(hyperlinks[i])
         const match = regexpTextEdit.exec(hyperlinks[i].href)
         if (match) {
-          hyperlinks[i].onclick = handleOnClick(match)
+          const { filepath, lineStr, colStartStr, colEndStr } = match.groups
+          const line = parseInt(lineStr)
+          const colStart = parseInt(colStartStr)
+          const colEnd = parseInt(colEndStr)
+          const codeLocation = {
+            filepath: filepath,
+            line: line,
+            colStart: colStart,
+            colEnd: colEnd,
+          }
+          const boundingClientRect = hyperlinks[i].getBoundingClientRect()
           hyperlinks[i].title = "Open in VSCode"
+          hyperlinks[i].onclick = handleOnClick(codeLocation)
+          registerLink(codeLocation, boundingClientRect)
         }
       }
     }

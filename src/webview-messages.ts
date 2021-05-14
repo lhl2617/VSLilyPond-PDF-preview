@@ -3,10 +3,16 @@ import { extensionID } from "./consts"
 import { outputChannelName, outputToChannel } from "./output"
 import { WebviewVSCodeMessage, WebviewVSCodeTextEditMessage } from "./types"
 
-export const handleWebviewVSCodeMessage = (msg: WebviewVSCodeMessage) => {
-  const { command } = msg
-  if (command === "textedit") {
+export const handleWebviewVSCodeMessage = (
+  msg: WebviewVSCodeMessage,
+  resource: vscode.Uri,
+  webviewEditor: vscode.WebviewPanel
+) => {
+  const { type } = msg
+  if (type === "textedit") {
     handleWebviewVSCodeTextEditMessage(msg as WebviewVSCodeTextEditMessage)
+  } else if (type === "register-link") {
+    handleWebviewVSCodeReopenAsTextMessage(resource, webviewEditor)
   }
 }
 
@@ -40,7 +46,7 @@ const handleWebviewVSCodeTextEditMessage = async (
     const highlightDuration = config.get(
       "pointAndClick.highlightDuration"
     ) as number
-    const { filepath, line, colStart, colEnd } = msg
+    const { filepath, line, colStart, colEnd } = msg.codeLocation
     const lineNum = line - 1 // 1-indexed
     const selection = new vscode.Selection(
       new vscode.Position(lineNum, colStart),
@@ -69,4 +75,16 @@ const handleWebviewVSCodeTextEditMessage = async (
     )
     outputToChannel(`[ERROR]: ${err}`, true)
   }
+}
+
+const handleWebviewVSCodeReopenAsTextMessage = (
+  resource: vscode.Uri,
+  webviewEditor: vscode.WebviewPanel
+) => {
+  vscode.commands.executeCommand(
+    "vscode.openWith",
+    resource,
+    "default",
+    webviewEditor.viewColumn
+  )
 }
