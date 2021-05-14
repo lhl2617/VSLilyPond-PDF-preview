@@ -1,8 +1,5 @@
 "use strict"
-;
-const { isUnionTypeNode } = require("typescript");
-
-(function () {
+;(function () {
   function loadConfig() {
     const elem = document.getElementById("pdf-preview-config")
     if (elem) {
