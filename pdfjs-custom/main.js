@@ -83,7 +83,6 @@
       scrollMode: scrollMode(configSettings.scrollMode),
       spreadMode: spreadMode(configSettings.spreadMode),
       rotation: 0, // in degrees
-      pageNumber: 1,
       scrollTop: 0,
       scrollLeft: 0,
     }
@@ -104,12 +103,10 @@
         PDFViewerApplication.pdfViewer.scrollMode = settings.scrollMode
         PDFViewerApplication.pdfViewer.spreadMode = settings.spreadMode
         PDFViewerApplication.pdfViewer.pagesRotation = settings.rotation
-        PDFViewerApplication.pdfViewer.currentPageNumber = settings.pageNumber
         document.getElementById("viewerContainer").scrollTop =
           settings.scrollTop
         document.getElementById("viewerContainer").scrollLeft =
           settings.scrollLeft
-        documentReloading = false
       }
 
       const listenToSettingsChanges = () => {
@@ -118,39 +115,20 @@
           const scrollLeft =
             document.getElementById("viewerContainer").scrollLeft
           if (!documentReloading) {
+            // check for !documentReloading is required because if the PDF changed (e.g. due to recompilation),
+            // updateviewarea gets called with reset settings.
             // console.log("updateviewarea")
             settings = {
               ...settings,
               scale: PDFViewerApplication.pdfViewer.currentScaleValue,
               scrollTop,
               scrollLeft,
+              cursor: PDFViewerApplication.pdfCursorTools.activeTool,
+              scrollMode: PDFViewerApplication.pdfViewer.scrollMode,
+              spreadMode: PDFViewerApplication.pdfViewer.spreadMode,
             }
             // console.log(JSON.stringify(settings))
           }
-        })
-        PDFViewerApplication.eventBus.on("cursortoolchanged", () => {
-          // console.log("cursortoolchanged")
-          settings = {
-            ...settings,
-            cursor: PDFViewerApplication.pdfCursorTools.activeTool,
-          }
-          // console.log(JSON.stringify(settings))
-        })
-        PDFViewerApplication.eventBus.on("scrollmodechanged", () => {
-          // console.log("scrollmodechanged")
-          settings = {
-            ...settings,
-            scrollMode: PDFViewerApplication.pdfViewer.scrollMode,
-          }
-          // console.log(JSON.stringify(settings))
-        })
-        PDFViewerApplication.eventBus.on("spreadmodechanged", () => {
-          // console.log("spreadmodechanged")
-          settings = {
-            ...settings,
-            spreadMode: PDFViewerApplication.pdfViewer.spreadMode,
-          }
-          // console.log(JSON.stringify(settings))
         })
         PDFViewerApplication.eventBus.on("rotatecw", () => {
           // console.log("rotatecw")
