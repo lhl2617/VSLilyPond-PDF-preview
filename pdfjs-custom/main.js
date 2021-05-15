@@ -84,6 +84,8 @@
       spreadMode: spreadMode(configSettings.spreadMode),
       rotation: 0, // in degrees
       pageNumber: 1,
+      scrollTop: 0,
+      scrollLeft: 0,
     }
   }
 
@@ -93,9 +95,9 @@
       const config = loadConfig()
 
       let settings = shimSettingsFromConfigSettings(config.defaults)
-      let documentReloaded = false
+      let documentReloading = false
 
-      const applySettings = async () => {
+      const applySettings = () => {
         // console.log(`Applying settings: ${JSON.stringify(settings)}`)
         PDFViewerApplication.pdfCursorTools.switchTool(settings.cursor)
         PDFViewerApplication.pdfViewer.currentScaleValue = settings.scale
@@ -103,24 +105,29 @@
         PDFViewerApplication.pdfViewer.spreadMode = settings.spreadMode
         PDFViewerApplication.pdfViewer.pagesRotation = settings.rotation
         PDFViewerApplication.pdfViewer.currentPageNumber = settings.pageNumber
+        document.getElementById("viewerContainer").scrollTop =
+          settings.scrollTop
+        document.getElementById("viewerContainer").scrollLeft =
+          settings.scrollLeft
+        documentReloading = false
       }
 
-      const listenToSettingsChanges = async () => {
-        const handleScaleChanged = () => {
-          // console.log("handleScaleChanged")
-          settings = {
-            ...settings,
-            scale: PDFViewerApplication.pdfViewer.currentScaleValue,
+      const listenToSettingsChanges = () => {
+        PDFViewerApplication.eventBus.on("updateviewarea", () => {
+          const scrollTop = document.getElementById("viewerContainer").scrollTop
+          const scrollLeft =
+            document.getElementById("viewerContainer").scrollLeft
+          if (!documentReloading) {
+            console.log("updateviewarea")
+            settings = {
+              ...settings,
+              scale: PDFViewerApplication.pdfViewer.currentScaleValue,
+              scrollTop,
+              scrollLeft,
+            }
+            console.log(JSON.stringify(settings))
           }
-          // console.log(JSON.stringify(settings))
-        }
-        // NB: Unfortunately, Ctrl+Zoom scale changes cannot be recorded...
-        // https://github.com/lhl2617/VSLilyPond-PDF-preview/issues/21
-        PDFViewerApplication.eventBus.on("scalechanged", handleScaleChanged)
-        PDFViewerApplication.eventBus.on("zoomin", handleScaleChanged)
-        PDFViewerApplication.eventBus.on("zoomout", handleScaleChanged)
-        PDFViewerApplication.eventBus.on("zoomreset", handleScaleChanged)
-
+        })
         PDFViewerApplication.eventBus.on("cursortoolchanged", () => {
           // console.log("cursortoolchanged")
           settings = {
@@ -167,21 +174,20 @@
       PDFViewerApplication.open(config.path)
       PDFViewerApplication.initializedPromise.then(() => {
         listenToSettingsChanges()
-        PDFViewerApplication.eventBus.on("documentloaded", () => {
-          documentReloaded = true
+        PDFViewerApplication.eventBus.on("pagesinit", () => {
+          documentReloading = true
         })
         PDFViewerApplication.eventBus.on("textlayerrendered", () => {
           // console.log("textlayerrendered")
-          if (documentReloaded) {
+          if (documentReloading) {
             // This portion is fired every time the pdf is changed AND loaded successfully
-            documentReloaded = false
             // just always close the sidebar--it's super annoying to maintain it.
-            // when the document reloads the settings change and the sidebarchanged event
-            // gets fired as the pdfSidebar mysteriously opens up again!
             // https://github.com/lhl2617/VSLilyPond-PDF-preview/issues/22
             PDFViewerApplication.pdfSidebar.close()
             handleTextEditLinks(vscodeAPI)
             applySettings()
+            // MUST BE AFTER APPLYING SETTINGS
+            documentReloading = false
           }
         })
       })
