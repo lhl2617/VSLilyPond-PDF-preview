@@ -162,9 +162,9 @@
       const vscodeAPI = acquireVsCodeApi()
       PDFViewerApplication.open(config.path)
       PDFViewerApplication.initializedPromise.then(() => {
+        listenToSettingsChanges()
         PDFViewerApplication.eventBus.on("documentloaded", () => {
           documentReloaded = true
-          listenToSettingsChanges()
         })
         PDFViewerApplication.eventBus.on("textlayerrendered", () => {
           // console.log("textlayerrendered")
