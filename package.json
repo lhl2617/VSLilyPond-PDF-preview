@@ -110,8 +110,8 @@
     "watch": "tsc -watch -p ./",
     "lint": "eslint src --ext ts",
     "pdfjs:install": "bash scripts/pdfjs.sh",
-    "docs:gen": "ts-node ./src/docs-gen/main.ts",
-    "pdfjs:patch": "ts-node ./src/pdfjs-patch/main.ts",
+    "docs:gen": "ts-node ./src/scripts/docs-gen/main.ts",
+    "pdfjs:patch": "ts-node ./src/scripts/pdfjs-patch/main.ts",
     "postinstall": "npm run pdfjs:patch"
   },
   "devDependencies": {
