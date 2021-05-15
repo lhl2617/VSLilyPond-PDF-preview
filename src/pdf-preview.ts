@@ -144,8 +144,8 @@ export class PdfPreview extends Disposable {
       "locale.properties"
     )}">
 <link rel="stylesheet" href="${resolveAsPdfJsDistUri("web", "viewer.css")}">
-<link rel="stylesheet" href="${resolveAsUri("pdfjs-custom", "pdf.css")}">
-<script src="${resolveAsUri("pdfjs-custom", "main.js")}"></script>
+<link rel="stylesheet" href="${resolveAsUri("src", "pdfjs-custom", "pdf.css")}">
+<script src="${resolveAsUri("src", "pdfjs-custom", "main.js")}"></script>
 <script src="${resolveAsPdfJsDistUri("build", "pdf.js")}"></script>
 <script src="${resolveAsPdfJsDistUri("build", "pdf.worker.js")}"></script>
 <!--This is named differently from the mozilla builds (viewer.js)-->
