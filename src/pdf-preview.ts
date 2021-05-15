@@ -112,7 +112,6 @@ export class PdfPreview extends Disposable {
       defaults: {
         cursor: config.get("general.cursor") as string,
         scale: config.get("general.scale") as string,
-        sidebar: config.get("general.sidebar") as boolean,
         scrollMode: config.get("general.scrollMode") as string,
         spreadMode: config.get("general.spreadMode") as string,
       },

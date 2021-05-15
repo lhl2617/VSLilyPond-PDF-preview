@@ -73,31 +73,111 @@
     }
   }
 
+  /**
+   * From config to PDFJS compliant settings
+   */
+  const shimSettingsFromConfigSettings = (configSettings) => {
+    return {
+      cursor: cursorTools(configSettings.cursor),
+      scale: configSettings.scale,
+      scrollMode: scrollMode(configSettings.scrollMode),
+      spreadMode: spreadMode(configSettings.spreadMode),
+      rotationDegrees: 0, // 0, 90, 180, 270
+    }
+  }
+
   window.addEventListener(
     "load",
     () => {
       const config = loadConfig()
-      const defaults = config.defaults
+
+      let settings = shimSettingsFromConfigSettings(config.defaults)
+      let documentReloaded = false
+
+      const applySettings = async () => {
+        // console.log(`Applying settings: ${JSON.stringify(settings)}`)
+        PDFViewerApplication.pdfCursorTools.switchTool(settings.cursor)
+        PDFViewerApplication.pdfViewer.currentScaleValue = settings.scale
+        PDFViewerApplication.pdfViewer.scrollMode = settings.scrollMode
+        PDFViewerApplication.pdfViewer.spreadMode = settings.spreadMode
+        PDFViewerApplication.pdfViewer.pagesRotation = settings.rotationDegrees
+      }
+
+      const listenToSettingsChanges = async () => {
+        const handleScaleChanged = () => {
+          // console.log("scalechanged")
+          settings = {
+            ...settings,
+            scale: PDFViewerApplication.pdfViewer.currentScaleValue,
+          }
+          // console.log(JSON.stringify(settings))
+        }
+        PDFViewerApplication.eventBus.on("scalechanged", handleScaleChanged)
+        PDFViewerApplication.eventBus.on("zoomin", handleScaleChanged)
+        PDFViewerApplication.eventBus.on("zoomout", handleScaleChanged)
+        PDFViewerApplication.eventBus.on("zoomreset", handleScaleChanged)
+
+        PDFViewerApplication.eventBus.on("cursortoolchanged", () => {
+          // console.log("cursortoolchanged")
+          settings = {
+            ...settings,
+            cursor: PDFViewerApplication.pdfCursorTools.activeTool,
+          }
+          // console.log(JSON.stringify(settings))
+        })
+        PDFViewerApplication.eventBus.on("scrollmodechanged", () => {
+          // console.log("scrollmodechanged")
+          settings = {
+            ...settings,
+            scrollMode: PDFViewerApplication.pdfViewer.scrollMode,
+          }
+          // console.log(JSON.stringify(settings))
+        })
+        PDFViewerApplication.eventBus.on("spreadmodechanged", () => {
+          // console.log("spreadmodechanged")
+          settings = {
+            ...settings,
+            spreadMode: PDFViewerApplication.pdfViewer.spreadMode,
+          }
+          // console.log(JSON.stringify(settings))
+        })
+        PDFViewerApplication.eventBus.on("rotatecw", () => {
+          // console.log("rotatecw")
+          settings = {
+            ...settings,
+            rotationDegrees: (settings.rotationDegrees + 90) % 360,
+          }
+          // console.log(JSON.stringify(settings))
+        })
+        PDFViewerApplication.eventBus.on("rotateccw", () => {
+          // console.log("rotatecw")
+          settings = {
+            ...settings,
+            rotationDegrees: (settings.rotationDegrees - 90 + 360) % 360,
+          }
+          // console.log(JSON.stringify(settings))
+        })
+      }
+
       const vscodeAPI = acquireVsCodeApi()
       PDFViewerApplication.open(config.path)
       PDFViewerApplication.initializedPromise.then(() => {
+        PDFViewerApplication.eventBus.on("documentloaded", () => {
+          documentReloaded = true
+          listenToSettingsChanges()
+        })
         PDFViewerApplication.eventBus.on("textlayerrendered", () => {
-          if (defaults.sidebar) {
-            PDFViewerApplication.pdfSidebar.open()
-          } else {
+          // console.log("textlayerrendered")
+          if (documentReloaded) {
+            // This portion is fired every time the pdf is changed AND loaded successfully
+            documentReloaded = false
+            // just always close the sidebar--it's super annoying to maintain it.
+            // when the document reloads the settings change and the sidebarchanged event
+            // gets fired as the pdfSidebar mysteriously opens up again!
             PDFViewerApplication.pdfSidebar.close()
+            handleTextEditLinks(vscodeAPI)
+            applySettings()
           }
-          PDFViewerApplication.pdfCursorTools.switchTool(
-            cursorTools(defaults.cursor)
-          )
-          PDFViewerApplication.pdfViewer.currentScaleValue = defaults.scale
-          PDFViewerApplication.pdfViewer.scrollMode = scrollMode(
-            defaults.scrollMode
-          )
-          PDFViewerApplication.pdfViewer.spreadMode = spreadMode(
-            defaults.spreadMode
-          )
-          handleTextEditLinks(vscodeAPI)
         })
       })
       window.addEventListener("message", function () {
@@ -108,6 +188,7 @@
   )
 
   window.onerror = function () {
+    5
     const msg = document.createElement("body")
     msg.innerText =
       "An error occurred while loading the file. Please open it again."

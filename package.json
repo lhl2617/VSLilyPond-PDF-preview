@@ -67,12 +67,6 @@
           "pattern": "^(\\d+(?:\\.\\d+)?|auto|page-actual|page-fit|page-width)$",
           "group": "general"
         },
-        "lilypond-pdf-preview.general.sidebar": {
-          "markdownDescription": "Show the sidebar on load.",
-          "type": "boolean",
-          "default": false,
-          "group": "general"
-        },
         "lilypond-pdf-preview.general.scrollMode": {
           "markdownDescription": "The default scroll mode for preview.",
           "type": "string",
