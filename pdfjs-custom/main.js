@@ -187,7 +187,10 @@
         if (type === "goto") {
           console.log(`Received goto: ${JSON.stringify(message)}`)
         } else {
-          console.error(`Unknown message: ${JSON.stringify(message)}`)
+          vscodeAPI.postMessage({
+            type: "error",
+            errorMessage: `Unknown message: ${JSON.stringify(message)}`,
+          })
         }
       })
     },

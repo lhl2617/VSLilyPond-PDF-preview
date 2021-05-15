@@ -1,5 +1,6 @@
 import * as vscode from "vscode"
 import { extensionID } from "./consts"
+import { outputToChannel } from "./output"
 import { PdfCustomProvider } from "./pdf-provider"
 
 export const activate = (context: vscode.ExtensionContext) => {
@@ -29,7 +30,7 @@ export const activate = (context: vscode.ExtensionContext) => {
         vscode.window.showErrorMessage(
           `Unable to go to PDF Location from cursor: ${err}`
         )
-        console.error(err)
+        outputToChannel(`[ERROR]: ${err}`)
       }
     }
   )

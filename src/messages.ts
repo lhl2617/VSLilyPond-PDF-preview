@@ -2,7 +2,10 @@ import * as vscode from "vscode"
 import { extensionID } from "./consts"
 import { outputChannelName, outputToChannel } from "./output"
 import {
+  VSCodeWebviewMessage,
+  WebviewVSCodeErrorMessage,
   WebviewVSCodeMessage,
+  WebviewVSCodeMessageType,
   WebviewVSCodeRegisterLinkMessage,
   WebviewVSCodeTextEditMessage,
 } from "./types"
@@ -14,29 +17,56 @@ import {
 
 export class WebviewVSCodeMessageHandler {
   private readonly _textEditMessageHandler = new TextEditMessageHandler()
+  private readonly _errorMessageHandler = new ErrorMessageHandler()
+  private readonly _registerLinkMessageHandler: RegisterLinkMessageHandler
+
   constructor(
-    private readonly _handleRegisterLinkMessage: (
-      msg: WebviewVSCodeRegisterLinkMessage
-    ) => any
-  ) {}
+    _handleRegisterLinkMessage: (msg: WebviewVSCodeRegisterLinkMessage) => any
+  ) {
+    this._registerLinkMessageHandler = new RegisterLinkMessageHandler(
+      _handleRegisterLinkMessage
+    )
+  }
 
   public handleWebviewVSCodeMessage = async (msg: WebviewVSCodeMessage) => {
     const { type } = msg
-    if (type === "textedit") {
-      this._textEditMessageHandler.handle(msg as WebviewVSCodeTextEditMessage)
-    } else if (type === "register-link") {
-      this._handleRegisterLinkMessage(msg as WebviewVSCodeRegisterLinkMessage)
-    } else {
-      console.error(
-        `Unknown WebviewVSCodeMessage type ${type} for message ${msg}`
-      )
+    switch (type) {
+      case "textedit":
+        this._textEditMessageHandler.handle(msg as WebviewVSCodeTextEditMessage)
+        break
+      case "register-link":
+        this._registerLinkMessageHandler.handle(
+          msg as WebviewVSCodeRegisterLinkMessage
+        )
+        break
+      case "error":
+        this._errorMessageHandler.handle(msg as WebviewVSCodeErrorMessage)
+      default:
+        vscode.window.showErrorMessage(
+          `Something went wrong, see "${outputChannelName}" Output for more info.`
+        )
+        outputToChannel(
+          `[ERROR]: Unknown WebviewVSCodeMessage type ${type} for message ${msg}`,
+          true
+        )
     }
   }
 }
 
-class TextEditMessageHandler {
-  constructor() {}
+class RegisterLinkMessageHandler {
+  constructor(public handle: (msg: WebviewVSCodeRegisterLinkMessage) => any) {}
+}
 
+class ErrorMessageHandler {
+  public handle = async (msg: WebviewVSCodeErrorMessage) => {
+    vscode.window.showErrorMessage(
+      `Something went wrong, see "${outputChannelName}" Output for more info.`
+    )
+    outputToChannel(`[ERROR]: ${msg}`, true)
+  }
+}
+
+class TextEditMessageHandler {
   private _lastActivatedDecorationType:
     | vscode.TextEditorDecorationType
     | undefined

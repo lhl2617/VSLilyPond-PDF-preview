@@ -3,7 +3,7 @@
 // =================
 export type WebviewVSCodeMessage = Required<{ type: WebviewVSCodeMessageType }>
 
-export type WebviewVSCodeMessageType = "textedit" | "register-link"
+export type WebviewVSCodeMessageType = "textedit" | "register-link" | "error"
 
 export type WebviewVSCodeTextEditMessage = {
   type: "textedit"
@@ -13,6 +13,11 @@ export type WebviewVSCodeTextEditMessage = {
 export type WebviewVSCodeRegisterLinkMessage = {
   type: "register-link"
 } & RegisterLinkContents
+
+export type WebviewVSCodeErrorMessage = {
+  type: "error"
+  errorMessage: string
+}
 
 // =================
 // VSCode -> Webview

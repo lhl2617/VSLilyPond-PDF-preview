@@ -8,8 +8,6 @@ type CursorInfo = {
 }
 
 export class GoToPDFLocationHandler {
-  constructor() {}
-
   private _linkRepository: Record<
     string, // VSCode Uri fsPath
     Record<
@@ -27,7 +25,7 @@ export class GoToPDFLocationHandler {
   > = {}
 
   public handleRegisterLinkMessageForPdf =
-    (pdfFsPath: string) => (msg: WebviewVSCodeRegisterLinkMessage) => {
+    (pdfFsPath: string) => async (msg: WebviewVSCodeRegisterLinkMessage) => {
       const { codeLocation, pdfLocation } = msg
       const { filepath, line, colStart, colEnd } = codeLocation
       const uri = vscode.Uri.file(filepath)
