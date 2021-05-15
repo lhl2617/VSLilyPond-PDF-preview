@@ -82,7 +82,8 @@
       scale: configSettings.scale,
       scrollMode: scrollMode(configSettings.scrollMode),
       spreadMode: spreadMode(configSettings.spreadMode),
-      rotationDegrees: 0, // 0, 90, 180, 270
+      rotation: 0, // in degrees
+      pageNumber: 1,
     }
   }
 
@@ -100,18 +101,21 @@
         PDFViewerApplication.pdfViewer.currentScaleValue = settings.scale
         PDFViewerApplication.pdfViewer.scrollMode = settings.scrollMode
         PDFViewerApplication.pdfViewer.spreadMode = settings.spreadMode
-        PDFViewerApplication.pdfViewer.pagesRotation = settings.rotationDegrees
+        PDFViewerApplication.pdfViewer.pagesRotation = settings.rotation
+        PDFViewerApplication.pdfViewer.currentPageNumber = settings.pageNumber
       }
 
       const listenToSettingsChanges = async () => {
         const handleScaleChanged = () => {
-          // console.log("scalechanged")
+          // console.log("handleScaleChanged")
           settings = {
             ...settings,
             scale: PDFViewerApplication.pdfViewer.currentScaleValue,
           }
           // console.log(JSON.stringify(settings))
         }
+        // NB: Unfortunately, Ctrl+Zoom scale changes cannot be recorded...
+        // https://github.com/lhl2617/VSLilyPond-PDF-preview/issues/21
         PDFViewerApplication.eventBus.on("scalechanged", handleScaleChanged)
         PDFViewerApplication.eventBus.on("zoomin", handleScaleChanged)
         PDFViewerApplication.eventBus.on("zoomout", handleScaleChanged)
@@ -145,15 +149,15 @@
           // console.log("rotatecw")
           settings = {
             ...settings,
-            rotationDegrees: (settings.rotationDegrees + 90) % 360,
+            rotation: (settings.rotation + 90) % 360,
           }
           // console.log(JSON.stringify(settings))
         })
         PDFViewerApplication.eventBus.on("rotateccw", () => {
-          // console.log("rotatecw")
+          // console.log("rotateccw")
           settings = {
             ...settings,
-            rotationDegrees: (settings.rotationDegrees - 90 + 360) % 360,
+            rotation: (settings.rotation - 90) % 360,
           }
           // console.log(JSON.stringify(settings))
         })
@@ -174,6 +178,7 @@
             // just always close the sidebar--it's super annoying to maintain it.
             // when the document reloads the settings change and the sidebarchanged event
             // gets fired as the pdfSidebar mysteriously opens up again!
+            // https://github.com/lhl2617/VSLilyPond-PDF-preview/issues/22
             PDFViewerApplication.pdfSidebar.close()
             handleTextEditLinks(vscodeAPI)
             applySettings()
