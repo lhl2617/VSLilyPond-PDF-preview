@@ -177,7 +177,6 @@
   )
 
   window.onerror = function () {
-    5
     const msg = document.createElement("body")
     msg.innerText =
       "An error occurred while loading the file. Please open it again."
