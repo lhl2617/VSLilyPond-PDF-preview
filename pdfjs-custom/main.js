@@ -73,31 +73,100 @@
     }
   }
 
+  /**
+   * From config to PDFJS compliant settings
+   */
+  const shimSettingsFromConfigSettings = (configSettings) => {
+    return {
+      cursor: cursorTools(configSettings.cursor),
+      scale: configSettings.scale,
+      scrollMode: scrollMode(configSettings.scrollMode),
+      spreadMode: spreadMode(configSettings.spreadMode),
+      rotation: 0, // in degrees
+      scrollTop: 0,
+      scrollLeft: 0,
+    }
+  }
+
   window.addEventListener(
     "load",
     () => {
       const config = loadConfig()
-      const defaults = config.defaults
+
+      let settings = shimSettingsFromConfigSettings(config.defaults)
+      let documentReloading = false
+
+      const applySettings = () => {
+        // console.log(`Applying settings: ${JSON.stringify(settings)}`)
+        PDFViewerApplication.pdfCursorTools.switchTool(settings.cursor)
+        PDFViewerApplication.pdfViewer.currentScaleValue = settings.scale
+        PDFViewerApplication.pdfViewer.scrollMode = settings.scrollMode
+        PDFViewerApplication.pdfViewer.spreadMode = settings.spreadMode
+        PDFViewerApplication.pdfViewer.pagesRotation = settings.rotation
+        document.getElementById("viewerContainer").scrollTop =
+          settings.scrollTop
+        document.getElementById("viewerContainer").scrollLeft =
+          settings.scrollLeft
+      }
+
+      const listenToSettingsChanges = () => {
+        PDFViewerApplication.eventBus.on("updateviewarea", () => {
+          const scrollTop = document.getElementById("viewerContainer").scrollTop
+          const scrollLeft =
+            document.getElementById("viewerContainer").scrollLeft
+          if (!documentReloading) {
+            // check for !documentReloading is required because if the PDF changed (e.g. due to recompilation),
+            // updateviewarea gets called with reset settings.
+            // console.log("updateviewarea")
+            settings = {
+              ...settings,
+              scale: PDFViewerApplication.pdfViewer.currentScaleValue,
+              scrollTop,
+              scrollLeft,
+              cursor: PDFViewerApplication.pdfCursorTools.activeTool,
+              scrollMode: PDFViewerApplication.pdfViewer.scrollMode,
+              spreadMode: PDFViewerApplication.pdfViewer.spreadMode,
+            }
+            // console.log(JSON.stringify(settings))
+          }
+        })
+        PDFViewerApplication.eventBus.on("rotatecw", () => {
+          // console.log("rotatecw")
+          settings = {
+            ...settings,
+            rotation: (settings.rotation + 90) % 360,
+          }
+          // console.log(JSON.stringify(settings))
+        })
+        PDFViewerApplication.eventBus.on("rotateccw", () => {
+          // console.log("rotateccw")
+          settings = {
+            ...settings,
+            rotation: (settings.rotation - 90) % 360,
+          }
+          // console.log(JSON.stringify(settings))
+        })
+      }
+
       const vscodeAPI = acquireVsCodeApi()
       PDFViewerApplication.open(config.path)
       PDFViewerApplication.initializedPromise.then(() => {
+        listenToSettingsChanges()
+        PDFViewerApplication.eventBus.on("pagesinit", () => {
+          documentReloading = true
+        })
         PDFViewerApplication.eventBus.on("textlayerrendered", () => {
-          if (defaults.sidebar) {
-            PDFViewerApplication.pdfSidebar.open()
-          } else {
+          // console.log("textlayerrendered")
+          if (documentReloading) {
+            // This portion is fired every time the pdf is changed AND loaded successfully
+            // just always close the sidebar--it's super annoying to maintain it.
+            // https://github.com/lhl2617/VSLilyPond-PDF-preview/issues/22
             PDFViewerApplication.pdfSidebar.close()
+            handleTextEditLinks(vscodeAPI)
+            applySettings()
+            // MUST BE AFTER APPLYING SETTINGS
+            documentReloading = false
           }
-          PDFViewerApplication.pdfCursorTools.switchTool(
-            cursorTools(defaults.cursor)
-          )
-          PDFViewerApplication.pdfViewer.currentScaleValue = defaults.scale
-          PDFViewerApplication.pdfViewer.scrollMode = scrollMode(
-            defaults.scrollMode
-          )
-          PDFViewerApplication.pdfViewer.spreadMode = spreadMode(
-            defaults.spreadMode
-          )
-          handleTextEditLinks(vscodeAPI)
         })
       })
       window.addEventListener("message", function () {

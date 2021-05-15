@@ -20,14 +20,6 @@ Type: `string`
 
 Default value: `auto`
 
-### lilypond-pdf-preview.general.sidebar
-
-Show the sidebar on load.
-
-Type: `boolean`
-
-Default value: `false`
-
 ### lilypond-pdf-preview.general.scrollMode
 
 The default scroll mode for preview.

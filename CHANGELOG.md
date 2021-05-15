@@ -1,7 +1,19 @@
 # Change Log
 
+## 0.1.9
+- Fix issues #19, #20, #21, #22
+  - Killed sidebar on load entirely: it is very annoying
+  - Persist settings across PDF compilations:
+    - cursor
+    - scale
+    - scrollMode
+    - spreadMode
+    - rotation
+    - scrollTop
+    - scrollLeft
+
 ## 0.1.8
-- Fix issue (#15) where this xtension causes VSLilyPond to be unable to start in a devcontainer
+- Fix issue (#15) where this extension causes VSLilyPond to be unable to start in a devcontainer
   - Removed `extensionKind` to let this extension start in the workspace.
 
 ## 0.1.7
