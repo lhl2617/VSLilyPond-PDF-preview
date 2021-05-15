@@ -58,10 +58,6 @@ See the FAQ at [docs/FAQ.md](docs/FAQ.md).
   ```bash
   npm i
   ```
-- Install `pdf.js` -- note that this requires `bash` -- Windows users are advised to run this step on WSL2 (but extension development can remain on Windows.)
-  ```bash
-  npm run pdfjs:install
-  ```
 - Hit `F5` to run an Extension Development Host.
 
   See [here](https://code.visualstudio.com/api/get-started/your-first-extension) for a detailed extension development guide.
