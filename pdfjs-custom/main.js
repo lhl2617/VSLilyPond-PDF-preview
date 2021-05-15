@@ -118,14 +118,14 @@
           const scrollLeft =
             document.getElementById("viewerContainer").scrollLeft
           if (!documentReloading) {
-            console.log("updateviewarea")
+            // console.log("updateviewarea")
             settings = {
               ...settings,
               scale: PDFViewerApplication.pdfViewer.currentScaleValue,
               scrollTop,
               scrollLeft,
             }
-            console.log(JSON.stringify(settings))
+            // console.log(JSON.stringify(settings))
           }
         })
         PDFViewerApplication.eventBus.on("cursortoolchanged", () => {
