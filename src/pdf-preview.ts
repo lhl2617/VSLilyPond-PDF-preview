@@ -2,7 +2,7 @@ import * as path from "path"
 import * as vscode from "vscode"
 import { extensionID } from "./consts"
 import { Disposable } from "./disposable"
-import { WebviewVSCodeMessageHandler } from "./messages/webview-vscode"
+import { WebviewVSCodeMessageHandler } from "./messages"
 import { VSCodeWebviewMessage, WebviewVSCodeRegisterLinkMessage } from "./types"
 
 function escapeAttribute(value: string | vscode.Uri): string {

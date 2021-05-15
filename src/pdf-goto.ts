@@ -7,13 +7,8 @@ type CursorInfo = {
   fsPath: string
 }
 
-export class GoToPDELocationHandler {
-  constructor(
-    private goToHandler: (
-      pdfFsPath: string,
-      pdfLocation: PDFLocation
-    ) => Promise<any>
-  ) {}
+export class GoToPDFLocationHandler {
+  constructor() {}
 
   private _linkRepository: Record<
     string, // VSCode Uri fsPath
@@ -49,11 +44,6 @@ export class GoToPDELocationHandler {
         pdfLocation,
         pdfFsPath,
       })
-      // console.log(
-      //   `Registered ${JSON.stringify(msg)} into ${JSON.stringify(
-      //     this._linkRepository
-      //   )}`
-      // )
     }
 
   private _getCursorInfo = (): CursorInfo => {
@@ -81,7 +71,7 @@ export class GoToPDELocationHandler {
     }
   }
 
-  private _getPDFPathAndLocationFromCursor = (
+  private _getPDFPathAndLocationFromCursorInfo = (
     cursor: CursorInfo
   ): {
     pdfFsPath: string
@@ -111,10 +101,8 @@ export class GoToPDELocationHandler {
     throw new Error("No valid PDF location can be found from the cursor")
   }
 
-  public goToPDFLocationFromCursor = async () => {
+  public getPDFPathAndLocationFromCursor = async () => {
     const cursorInfo = this._getCursorInfo()
-    const { pdfLocation, pdfFsPath } =
-      this._getPDFPathAndLocationFromCursor(cursorInfo)
-    await this.goToHandler(pdfFsPath, pdfLocation)
+    return this._getPDFPathAndLocationFromCursorInfo(cursorInfo)
   }
 }

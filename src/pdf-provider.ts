@@ -1,5 +1,5 @@
 import * as vscode from "vscode"
-import { GoToPDELocationHandler } from "./pdf-goto"
+import { GoToPDFLocationHandler } from "./pdf-goto"
 import { PdfPreview } from "./pdf-preview"
 import { PDFLocation, VSCodeWebviewGoToMessage } from "./types"
 
@@ -8,8 +8,7 @@ export class PdfCustomProvider implements vscode.CustomReadonlyEditorProvider {
 
   private readonly _previews = new Set<PdfPreview>()
   private _activePreview: PdfPreview | undefined
-  private _goToPDFLocationHandler: GoToPDELocationHandler =
-    new GoToPDELocationHandler(this.goToPDFLocation)
+  private _goToPDFLocationHandler = new GoToPDFLocationHandler()
 
   constructor(private readonly extensionRoot: vscode.Uri) {}
 
@@ -73,7 +72,9 @@ export class PdfCustomProvider implements vscode.CustomReadonlyEditorProvider {
     preview.revealWebview()
   }
 
-  public goToPDFLocationFromCursor = async () => {
-    await this._goToPDFLocationHandler.goToPDFLocationFromCursor()
+  public async goToPDFLocationFromCursor() {
+    const { pdfLocation, pdfFsPath } =
+      await this._goToPDFLocationHandler.getPDFPathAndLocationFromCursor()
+    await this.goToPDFLocation(pdfFsPath, pdfLocation)
   }
 }
