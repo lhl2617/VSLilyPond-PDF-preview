@@ -105,6 +105,15 @@ export class PdfPreview extends Disposable {
       const uri = vscode.Uri.file(path.join(this.extensionRoot.path, ...p))
       return webview.asWebviewUri(uri)
     }
+    const resolveAsPdfJsDistUri = (...p: string[]): vscode.Uri => {
+      return resolveAsUri(
+        "node_modules",
+        "pdfjs-dist-viewer-min",
+        "build",
+        "minified",
+        ...p
+      )
+    }
 
     const config = vscode.workspace.getConfiguration(extensionID)
     const settings = {
@@ -129,18 +138,18 @@ export class PdfPreview extends Disposable {
       JSON.stringify(settings)
     )}">
 <title>PDF.js viewer</title>
-<link rel="resource" type="application/l10n" href="${resolveAsUri(
-      "pdfjs",
+<link rel="resource" type="application/l10n" href="${resolveAsPdfJsDistUri(
       "web",
       "locale",
       "locale.properties"
     )}">
-<link rel="stylesheet" href="${resolveAsUri("pdfjs", "web", "viewer.css")}">
+<link rel="stylesheet" href="${resolveAsPdfJsDistUri("web", "viewer.css")}">
 <link rel="stylesheet" href="${resolveAsUri("pdfjs-custom", "pdf.css")}">
 <script src="${resolveAsUri("pdfjs-custom", "main.js")}"></script>
-<script src="${resolveAsUri("pdfjs", "build", "pdf.js")}"></script>
-<script src="${resolveAsUri("pdfjs", "build", "pdf.worker.js")}"></script>
-<script src="${resolveAsUri("pdfjs", "web", "viewer.js")}"></script>
+<script src="${resolveAsPdfJsDistUri("build", "pdf.js")}"></script>
+<script src="${resolveAsPdfJsDistUri("build", "pdf.worker.js")}"></script>
+<!--This is named differently from the mozilla builds (viewer.js)-->
+<script src="${resolveAsPdfJsDistUri("web", "pdf.viewer.js")}"></script>
 </head>`
 
     const body = `<body tabindex="1" class="loadingInProgress">
