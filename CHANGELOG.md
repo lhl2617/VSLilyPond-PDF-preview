@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.1.10
+- Fix issue (#17): Use `pdf-js-viewer-min` instead of downloading pdf.js separately
+
 ## 0.1.9
 - Fix issues #19, #20, #21, #22
   - Killed sidebar on load entirely: it is very annoying
