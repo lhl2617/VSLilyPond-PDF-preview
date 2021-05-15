@@ -4,5 +4,4 @@ node_modules
 *.vsix
 dist
 *.zip
-pdfjs
 tmp

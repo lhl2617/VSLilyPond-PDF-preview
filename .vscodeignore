@@ -14,3 +14,4 @@ vsc-extension-quickstart.md
 **/.prettierrc.json
 
 *.zip
+tmp
