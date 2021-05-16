@@ -9,25 +9,35 @@ Included in the [VSLilyPond](https://marketplace.visualstudio.com/items?itemName
 
 ## Features
 
-### Point and Click 📄
+### Two-way Point and Click 📄
 
-![Point-and-Click](./docs/assets/gifs/pointAndClick.gif)
+#### Forward (Score to PDF)
+![Forward Point-and-Click](./docs/assets/gifs/point-and-click-forward.gif)
+#### Backward (PDF to Score)
+![Backward Point-and-Click](./docs/assets/gifs/point-and-click-backward.gif)
 
 ## Requirements
 
 * [VSCode](https://code.visualstudio.com/) 1.46.0 minimum
 - (Optional but recommended): [VSLilyPond](https://marketplace.visualstudio.com/items?itemName=lhl2617.vslilypond) -- Provides advanced LilyPond language support
 ## Usage Guide
-1. Open your LilyPond-compiled PDF in VSCode using the `LilyPond PDF Preview` option. 
+-  Open your LilyPond-compiled PDF in VSCode using the `LilyPond PDF Preview` option. 
 If you have multiple PDF previewer extensions, make sure that you choose `LilyPond PDF Preview` when opening the file.
 ![Step 1](./docs/assets/img/usage-1.png)
 ![Step 2](./docs/assets/img/usage-2.png)
 
-2. Click on any of the noteheads etc. to use point-and-click.
+- Forward point-and-click
+  - Click on the code location you are interested in, then execute the `LilyPond PDF Preview: Go to PDF location from Cursor` command 
+    - Press `Ctrl`/`Cmd` + `Shift` + `P` to open the Command Palette
+    - It is advisable to bind a shortcut to this feature as you please via the Command Palette
+- Backward point-and-click
+  - Click on any of the noteheads etc..
+
 
 ## Extension Settings
 
 - Settings: See [docs/SETTINGS.md](docs/SETTINGS.md)
+- Commands: See [docs/COMMANDS.md](docs/COMMANDS.md)
 
 ## Issues
 

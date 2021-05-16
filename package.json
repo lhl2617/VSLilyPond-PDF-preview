@@ -50,7 +50,7 @@
         "command": "lilypond-pdf-preview.goToPDFLocationFromCursor",
         "title": "LilyPond PDF Preview: Go to PDF location from Cursor",
         "group": "general",
-        "description": "Go the PDF location pointed to by the current cursor location."
+        "description": "Go the PDF location pointed by the current cursor location."
       }
     ],
     "configuration": {
