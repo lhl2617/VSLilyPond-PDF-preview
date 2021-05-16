@@ -71,54 +71,80 @@
   }
 
   const handleTextEditLinks = async () => {
-    const annotationLayerElems =
-      document.getElementsByClassName("annotationLayer")
-    for (const annotationsLayerElem of annotationLayerElems) {
-      const hyperlinks = annotationsLayerElem.getElementsByTagName("a")
+    try {
+      const annotationLayerElems =
+        document.getElementsByClassName("annotationLayer")
+      for (const annotationsLayerElem of annotationLayerElems) {
+        const hyperlinks = annotationsLayerElem.getElementsByTagName("a")
 
-      const handleOnClick = (codeLocation) => (e) => {
-        e.preventDefault()
-        vscodeAPI.postMessage({
-          type: "textedit",
-          codeLocation: codeLocation,
-        })
-      }
+        const handleOnClick = (codeLocation) => (e) => {
+          e.preventDefault()
+          vscodeAPI.postMessage({
+            type: "textedit",
+            codeLocation: codeLocation,
+          })
+        }
 
-      for (var i = 0; i < hyperlinks.length; i++) {
-        const match = regexpTextEdit.exec(hyperlinks[i].href)
-        if (match) {
-          const codeLocation = getCodeLocationFromMatchGroups(match)
-          hyperlinks[i].title = "Open in VSCode"
-          hyperlinks[i].onclick = handleOnClick(codeLocation)
+        for (var i = 0; i < hyperlinks.length; i++) {
+          const match = regexpTextEdit.exec(hyperlinks[i].href)
+          if (match) {
+            const codeLocation = getCodeLocationFromMatchGroups(match)
+            hyperlinks[i].title = "Open in VSCode"
+            hyperlinks[i].onclick = handleOnClick(codeLocation)
+            hyperlinks[i].id = hyperlinks[i].href // this ID is used for code -> PDF during registerLinks
+          }
         }
       }
+      logToVscode("Finished handling textedits")
+    } catch (err) {
+      errorToVscode(`Error handling text edit links: ${err}`)
     }
-    logToVscode("Finished handling textedits")
   }
 
   const handleRegisterLinks = async () => {
-    const annotationLayerElems =
-      document.getElementsByClassName("annotationLayer")
-    for (const annotationsLayerElem of annotationLayerElems) {
-      const hyperlinks = annotationsLayerElem.getElementsByTagName("a")
-      const registerLink = async (codeLocation, pdfLocation) => {
-        vscodeAPI.postMessage({
-          type: "register-link",
-          codeLocation: codeLocation,
-          pdfLocation: pdfLocation,
-        })
-      }
+    try {
+      const annotationLayerElems =
+        document.getElementsByClassName("annotationLayer")
+      for (const annotationsLayerElem of annotationLayerElems) {
+        const hyperlinks = annotationsLayerElem.getElementsByTagName("a")
+        const registerLink = async (codeLocation, elementID) => {
+          vscodeAPI.postMessage({
+            type: "register-link",
+            codeLocation: codeLocation,
+            elementID: elementID,
+          })
+        }
 
-      for (var i = 0; i < hyperlinks.length; i++) {
-        const match = regexpTextEdit.exec(hyperlinks[i].href)
-        if (match) {
-          const codeLocation = getCodeLocationFromMatchGroups(match)
-          const pdfLocation = hyperlinks[i].getBoundingClientRect()
-          registerLink(codeLocation, pdfLocation)
+        for (var i = 0; i < hyperlinks.length; i++) {
+          const match = regexpTextEdit.exec(hyperlinks[i].href)
+          if (match) {
+            const codeLocation = getCodeLocationFromMatchGroups(match)
+            registerLink(codeLocation, hyperlinks[i].href) // the href is the ID as set in handleTextEditLinks
+          }
         }
       }
+      logToVscode("Finished registering links")
+    } catch (err) {
+      errorToVscode(`Error handling register links: ${err}`)
     }
-    logToVscode("Finished registering links")
+  }
+
+  const handleGoto = async (elementID) => {
+    try {
+      const elem = document.getElementById(elementID)
+      if (!elem) {
+        throw new Error(`Unable to find element with ID: ${elementID}`)
+      }
+      const timeoutMS = 3000
+      const blinkGotoClassName = `blink-goto`
+      elem.scrollIntoView({ block: `center` })
+      elem.classList.add(blinkGotoClassName)
+      setTimeout(() => {
+        elem.classList.remove(blinkGotoClassName)
+      }, timeoutMS)
+    } catch (err) {
+      errorToVscode(`Error handling goto: ${err}`)
+    }
   }
 
   /**
@@ -200,13 +226,14 @@
       PDFViewerApplication.initializedPromise.then(() => {
         listenToSettingsChanges()
         PDFViewerApplication.eventBus.on("pagesinit", () => {
+          logToVscode("pagesinit")
           documentReloading = true
         })
         PDFViewerApplication.eventBus.on("textlayerrendered", () => {
           // console.log("textlayerrendered")
           if (documentReloading) {
             logToVscode("documentReloading")
-            // This portion is fired every time the pdf is changed AND loaded successfully
+            // This portion is fired every time the pdf is changed AND loaded successfully.
             // just always close the sidebar--it's super annoying to maintain it.
             // https://github.com/lhl2617/VSLilyPond-PDF-preview/issues/22
             PDFViewerApplication.pdfSidebar.close()
@@ -225,16 +252,22 @@
       window.addEventListener("message", (e) => {
         const message = e.data
         const type = message.type
-        if (type === "goto") {
-          console.log(`Received goto: ${JSON.stringify(message)}`)
-        } else if (type === "link-register-ready") {
-          logToVscode("Received link-register-ready")
-          handleRegisterLinks()
-        } else {
-          vscodeAPI.postMessage({
-            type: "error",
-            errorMessage: `Unknown message: ${JSON.stringify(message)}`,
-          })
+        console.log(JSON.stringify(message))
+        switch (type) {
+          case "reload":
+            // this is not sent by vscode, but is a builtin
+            logToVscode("reload")
+            window.PDFViewerApplication.open(config.path)
+            break
+          case "goto":
+            handleGoto(message.elementID)
+            break
+          case "link-register-ready":
+            logToVscode("Received link-register-ready")
+            handleRegisterLinks()
+            break
+          default:
+            logToVscode(`Ignoring unknown message: ${JSON.stringify(message)}`)
         }
       })
     },

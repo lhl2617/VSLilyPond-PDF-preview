@@ -43,7 +43,7 @@ export type VSCodeWebviewMessageType = "goto" | "link-register-ready"
 
 export type VSCodeWebviewGoToMessage = {
   type: "goto"
-  pdfLocation: PDFLocation
+  elementID: string
 }
 
 // Sent by VSCode to webview when VSCode is ready for links (after clearing them via the clear-links message)
@@ -68,7 +68,5 @@ export type LilyPondCodeFilePath = string
 
 export type RegisterLinkContents = {
   codeLocation: LilyPondCodeLocation
-  pdfLocation: PDFLocation
+  elementID: string
 }
-
-export type PDFLocation = DOMRect

@@ -1,4 +1,4 @@
-import { PDFLocation, WebviewVSCodeRegisterLinkMessage } from "./types"
+import { WebviewVSCodeRegisterLinkMessage } from "./types"
 import * as vscode from "vscode"
 import { outputToChannel } from "./output"
 
@@ -19,7 +19,7 @@ export class GoToPDFLocationHandler {
       {
         colStart: number
         colEnd: number
-        pdfLocation: PDFLocation
+        elementID: string
         pdfFsPath: string
       }[]
     >
@@ -46,7 +46,7 @@ export class GoToPDFLocationHandler {
 
   public handleRegisterLinkMessageForPdf =
     (pdfFsPath: string) => async (msg: WebviewVSCodeRegisterLinkMessage) => {
-      const { codeLocation, pdfLocation } = msg
+      const { codeLocation, elementID } = msg
       const { filepath, line, colStart, colEnd } = codeLocation
       const uri = vscode.Uri.file(filepath)
       const { fsPath } = uri
@@ -59,7 +59,7 @@ export class GoToPDFLocationHandler {
       this._linkRepository[fsPath][line].push({
         colStart,
         colEnd,
-        pdfLocation,
+        elementID,
         pdfFsPath,
       })
     }
@@ -89,38 +89,24 @@ export class GoToPDFLocationHandler {
     }
   }
 
-  private _getPDFPathAndLocationFromCursorInfo = (
-    cursor: CursorInfo
-  ): {
-    pdfFsPath: string
-    pdfLocation: PDFLocation
-  } => {
-    const { fsPath, line, col } = cursor
+  public getPDFPathAndElementIDFromCursor = async () => {
+    const cursorInfo = this._getCursorInfo()
+    const { fsPath, line, col } = cursorInfo
     if (fsPath in this._linkRepository) {
       const fsPathLinkRepo = this._linkRepository[fsPath]
       if (line in fsPathLinkRepo) {
         const lineLinkRepo = fsPathLinkRepo[line]
         // now iterate through and see if col lies in the colStart -- colEnd range
-        for (const {
-          colStart,
-          colEnd,
-          pdfLocation,
-          pdfFsPath,
-        } of lineLinkRepo) {
+        for (const { colStart, colEnd, elementID, pdfFsPath } of lineLinkRepo) {
           if (colStart <= col && col <= colEnd) {
             return {
               pdfFsPath,
-              pdfLocation,
+              elementID,
             }
           }
         }
       }
     }
     throw new Error("No valid PDF location can be found from the cursor")
-  }
-
-  public getPDFPathAndLocationFromCursor = async () => {
-    const cursorInfo = this._getCursorInfo()
-    return this._getPDFPathAndLocationFromCursorInfo(cursorInfo)
   }
 }

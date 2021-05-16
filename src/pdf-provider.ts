@@ -2,7 +2,6 @@ import * as vscode from "vscode"
 import { GoToPDFLocationHandler } from "./pdf-goto"
 import { PdfPreview } from "./pdf-preview"
 import {
-  PDFLocation,
   VSCodeWebviewGoToMessage,
   VSCodeWebviewLinkRegisterReadyMessage,
   WebviewVSCodeClearLinksMessage,
@@ -70,7 +69,7 @@ export class PdfCustomProvider implements vscode.CustomReadonlyEditorProvider {
     this._activePreview = value
   }
 
-  private async goToPDFLocation(pdfFsPath: string, pdfLocation: PDFLocation) {
+  private async goToPDFLocation(pdfFsPath: string, elementID: string) {
     // find the preview with the right pdfFsPath
     let preview: PdfPreview | undefined
     for (const p of this._previews.values()) {
@@ -84,15 +83,15 @@ export class PdfCustomProvider implements vscode.CustomReadonlyEditorProvider {
     }
     const msg: VSCodeWebviewGoToMessage = {
       type: "goto",
-      pdfLocation: pdfLocation,
+      elementID: elementID,
     }
     preview.postMessageToWebview(msg)
     preview.revealWebview()
   }
 
   public async goToPDFLocationFromCursor() {
-    const { pdfLocation, pdfFsPath } =
-      await this._goToPDFLocationHandler.getPDFPathAndLocationFromCursor()
-    await this.goToPDFLocation(pdfFsPath, pdfLocation)
+    const { elementID, pdfFsPath } =
+      await this._goToPDFLocationHandler.getPDFPathAndElementIDFromCursor()
+    await this.goToPDFLocation(pdfFsPath, elementID)
   }
 }
