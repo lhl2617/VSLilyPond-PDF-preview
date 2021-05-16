@@ -96,9 +96,21 @@ export class GoToPDFLocationHandler {
       const fsPathLinkRepo = this._linkRepository[fsPath]
       if (line in fsPathLinkRepo) {
         const lineLinkRepo = fsPathLinkRepo[line]
+        /*
         // now iterate through and see if col lies in the colStart -- colEnd range
         for (const { colStart, colEnd, elementID, pdfFsPath } of lineLinkRepo) {
           if (colStart <= col && col <= colEnd) {
+            return {
+              pdfFsPath,
+              elementID,
+            }
+          }
+        }
+        */
+        // The below block is problematic because colEnd is always col + 1
+        // In fact I think it's not significant--thus, just find the first element with col >= colStart
+        for (const { colStart, elementID, pdfFsPath } of lineLinkRepo) {
+          if (col >= colStart) {
             return {
               pdfFsPath,
               elementID,
