@@ -252,7 +252,7 @@
       window.addEventListener("message", (e) => {
         const message = e.data
         const type = message.type
-        console.log(JSON.stringify(message))
+        // console.log(JSON.stringify(message))
         switch (type) {
           case "reload":
             // this is not sent by vscode, but is a builtin
