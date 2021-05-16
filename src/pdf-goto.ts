@@ -108,14 +108,27 @@ export class GoToPDFLocationHandler {
         }
         */
         // The below block is problematic because colEnd is always col + 1
-        // In fact I think it's not significant--thus, just find the first element with col >= colStart
+        // In fact I think it's not significant--thus, just find the closest element to colStart
+        let delta = Number.MAX_SAFE_INTEGER
+        let candidate:
+          | {
+              pdfFsPath: string
+              elementID: string
+            }
+          | undefined
         for (const { colStart, elementID, pdfFsPath } of lineLinkRepo) {
           if (col >= colStart) {
-            return {
-              pdfFsPath,
-              elementID,
+            if (col - colStart < delta) {
+              delta = col - colStart
+              candidate = {
+                pdfFsPath,
+                elementID,
+              }
             }
           }
+        }
+        if (candidate) {
+          return candidate
         }
       }
     }
