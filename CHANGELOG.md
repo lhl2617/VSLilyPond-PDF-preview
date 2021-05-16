@@ -2,6 +2,7 @@
 
 ## 0.2.0
 - Implement issue #7: Goto from source code to PDF
+- Code refactors
 
 ## 0.1.11
 - Make sure patches to pdf.js are made during compilation and publishing
