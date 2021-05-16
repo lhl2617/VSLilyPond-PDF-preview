@@ -9,7 +9,7 @@ type CursorInfo = {
 
 export class GoToPDFLocationHandler {
   private _linkRepository: Record<
-    string, // VSCode Uri fsPath
+    string, // VSCode Uri fsPath (LilyPond code)
     Record<
       number, // line number
       // This should be a nice ordered set for O(log n) lookups,
