@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.1.11
+- Make sure patches to pdf.js are made during compilation and publishing
+
 ## 0.1.10
 - Fix issue (#17): Use `pdf-js-viewer-min` instead of downloading pdf.js separately
 
