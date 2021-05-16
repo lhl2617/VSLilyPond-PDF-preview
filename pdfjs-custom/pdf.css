@@ -13,3 +13,16 @@ body {
   width: 100%;
   height: 100%;
 }
+/* TODO:- make these user-customisable */
+.blink-goto {
+  border: 3px #ffa500 solid;
+  border-radius: 50%;
+  animation: blinker 1s linear infinite;
+  transform: translate(-25%, -25%);
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}

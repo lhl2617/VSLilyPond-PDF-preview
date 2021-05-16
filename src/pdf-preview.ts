@@ -2,7 +2,12 @@ import * as path from "path"
 import * as vscode from "vscode"
 import { extensionID } from "./consts"
 import { Disposable } from "./disposable"
-import { handleWebviewMessage } from "./webview-messages"
+import { WebviewVSCodeMessageHandler } from "./messages"
+import {
+  VSCodeWebviewMessage,
+  WebviewVSCodeClearLinksMessage,
+  WebviewVSCodeRegisterLinkMessage,
+} from "./types"
 
 function escapeAttribute(value: string | vscode.Uri): string {
   return value.toString().replace(/"/g, "&quot;")
@@ -11,14 +16,23 @@ function escapeAttribute(value: string | vscode.Uri): string {
 type PreviewState = "Disposed" | "Visible" | "Active"
 
 export class PdfPreview extends Disposable {
+  public fsPath: string
   private _previewState: PreviewState = "Visible"
+  private _webviewVSCodeMessageHandler: WebviewVSCodeMessageHandler
 
   constructor(
     private readonly extensionRoot: vscode.Uri,
     private readonly resource: vscode.Uri,
-    private readonly webviewEditor: vscode.WebviewPanel
+    private readonly webviewEditor: vscode.WebviewPanel,
+    registerLinkMessageHandler: (msg: WebviewVSCodeRegisterLinkMessage) => any,
+    clearLinksMessageHandler: (msg: WebviewVSCodeClearLinksMessage) => any
   ) {
     super()
+    this.fsPath = resource.fsPath
+    this._webviewVSCodeMessageHandler = new WebviewVSCodeMessageHandler(
+      registerLinkMessageHandler,
+      clearLinksMessageHandler
+    )
     const resourceRoot = resource.with({
       path: resource.path.replace(/\/[^/]+?\.\w+$/, "/"),
     })
@@ -29,19 +43,9 @@ export class PdfPreview extends Disposable {
     }
 
     this._register(
-      webviewEditor.webview.onDidReceiveMessage((message) => {
-        switch (message.type) {
-          case "reopen-as-text": {
-            vscode.commands.executeCommand(
-              "vscode.openWith",
-              resource,
-              "default",
-              webviewEditor.viewColumn
-            )
-            break
-          }
-        }
-      })
+      webviewEditor.webview.onDidReceiveMessage(
+        this._webviewVSCodeMessageHandler.handleWebviewVSCodeMessage
+      )
     )
 
     this._register(
@@ -75,8 +79,15 @@ export class PdfPreview extends Disposable {
     )
 
     this.webviewEditor.webview.html = this.getWebviewContents()
-    this.webviewEditor.webview.onDidReceiveMessage(handleWebviewMessage)
     this.update()
+  }
+
+  public async postMessageToWebview(msg: VSCodeWebviewMessage) {
+    this.webviewEditor.webview.postMessage(msg)
+  }
+
+  public async revealWebview() {
+    this.webviewEditor.reveal()
   }
 
   private reload(): void {

@@ -3,7 +3,7 @@
   "publisher": "lhl2617",
   "displayName": "LilyPond PDF Preview",
   "description": "Provides PDF Preview for LilyPond-generated PDFs. Supports point-and-click from PDF to source code.",
-  "version": "0.1.11",
+  "version": "0.2.0",
   "engines": {
     "vscode": "^1.46.0"
   },
@@ -25,8 +25,7 @@
     "url": "https://github.com/lhl2617/VSLilyPond-PDF-preview/issues"
   },
   "activationEvents": [
-    "onCustomEditor:lilypond.pdf.preview",
-    "onLanguage:lilypond"
+    "onCustomEditor:lilypond.pdf.preview"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -44,6 +43,14 @@
             "filenamePattern": "*.pdf"
           }
         ]
+      }
+    ],
+    "commands": [
+      {
+        "command": "lilypond-pdf-preview.goToPDFLocationFromCursor",
+        "title": "LilyPond PDF Preview: Go to PDF location from Cursor",
+        "group": "general",
+        "description": "Go the PDF location pointed by the current cursor location."
       }
     ],
     "configuration": {

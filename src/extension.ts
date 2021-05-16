@@ -1,4 +1,6 @@
 import * as vscode from "vscode"
+import { extensionID } from "./consts"
+import { outputToChannel } from "./output"
 import { PdfCustomProvider } from "./pdf-provider"
 
 export const activate = (context: vscode.ExtensionContext) => {
@@ -17,6 +19,22 @@ export const activate = (context: vscode.ExtensionContext) => {
       }
     )
   )
+
+  // Register command
+  const goToPDFLocationCmd = vscode.commands.registerCommand(
+    `${extensionID}.goToPDFLocationFromCursor`,
+    async () => {
+      try {
+        await provider.goToPDFLocationFromCursor()
+      } catch (err) {
+        vscode.window.showErrorMessage(
+          `Unable to go to PDF Location from cursor: ${err}`
+        )
+        outputToChannel(`[ERROR]: ${err}`)
+      }
+    }
+  )
+  context.subscriptions.push(goToPDFLocationCmd)
 }
 
 export const deactivate = () => {}

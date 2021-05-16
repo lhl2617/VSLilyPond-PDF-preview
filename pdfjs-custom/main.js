@@ -37,39 +37,113 @@
         return -1
     }
   }
+  const vscodeAPI = acquireVsCodeApi()
 
-  const handleTextEditLinks = (vscodeAPI) => {
-    const annotationLayerElems =
-      document.getElementsByClassName("annotationLayer")
-    for (const annotationsLayerElem of annotationLayerElems) {
-      const hyperlinks = annotationsLayerElem.getElementsByTagName("a")
+  const logToVscode = (message) => {
+    vscodeAPI.postMessage({
+      type: "log",
+      message: message,
+    })
+  }
 
-      const handleOnClick = (e) => {
-        const href = e.target.href
-        const regexpTextEdit =
-          /textedit:\/\/(?<filepath>.+):(?<lineStr>[0-9]+):(?<colStartStr>[0-9]+):(?<colEndStr>[0-9]+)/
-        const match = regexpTextEdit.exec(href)
-        if (match) {
+  const errorToVscode = (errorMessage) => {
+    vscodeAPI.postMessage({
+      type: "error",
+      errorMessage: errorMessage,
+    })
+  }
+
+  const regexpTextEdit =
+    /textedit:\/\/(?<filepath>.+):(?<lineStr>[0-9]+):(?<colStartStr>[0-9]+):(?<colEndStr>[0-9]+)/
+
+  const getCodeLocationFromMatchGroups = (match) => {
+    const { filepath, lineStr, colStartStr, colEndStr } = match.groups
+    const line = parseInt(lineStr)
+    const colStart = parseInt(colStartStr)
+    const colEnd = parseInt(colEndStr)
+    const codeLocation = {
+      filepath: filepath,
+      line: line,
+      colStart: colStart,
+      colEnd: colEnd,
+    }
+    return codeLocation
+  }
+
+  const handleTextEditLinks = async () => {
+    try {
+      const annotationLayerElems =
+        document.getElementsByClassName("annotationLayer")
+      for (const annotationsLayerElem of annotationLayerElems) {
+        const hyperlinks = annotationsLayerElem.getElementsByTagName("a")
+
+        const handleOnClick = (codeLocation) => (e) => {
           e.preventDefault()
-
-          const { filepath, lineStr, colStartStr, colEndStr } = match.groups
-
-          const line = parseInt(lineStr)
-          const colStart = parseInt(colStartStr)
-          const colEnd = parseInt(colEndStr)
           vscodeAPI.postMessage({
-            command: "textedit",
-            line: line,
-            filepath: filepath,
-            colStart: colStart,
-            colEnd: colEnd,
+            type: "textedit",
+            codeLocation: codeLocation,
           })
         }
-      }
 
-      for (var i = 0; i < hyperlinks.length; i++) {
-        hyperlinks[i].onclick = handleOnClick
+        for (var i = 0; i < hyperlinks.length; i++) {
+          const match = regexpTextEdit.exec(hyperlinks[i].href)
+          if (match) {
+            const codeLocation = getCodeLocationFromMatchGroups(match)
+            hyperlinks[i].title = "Open in VSCode"
+            hyperlinks[i].onclick = handleOnClick(codeLocation)
+            hyperlinks[i].id = hyperlinks[i].href // this ID is used for code -> PDF during registerLinks
+          }
+        }
       }
+      logToVscode("Finished handling textedits")
+    } catch (err) {
+      errorToVscode(`Error handling text edit links: ${err}`)
+    }
+  }
+
+  const handleRegisterLinks = async () => {
+    try {
+      const annotationLayerElems =
+        document.getElementsByClassName("annotationLayer")
+      for (const annotationsLayerElem of annotationLayerElems) {
+        const hyperlinks = annotationsLayerElem.getElementsByTagName("a")
+        const registerLink = async (codeLocation, elementID) => {
+          vscodeAPI.postMessage({
+            type: "register-link",
+            codeLocation: codeLocation,
+            elementID: elementID,
+          })
+        }
+
+        for (var i = 0; i < hyperlinks.length; i++) {
+          const match = regexpTextEdit.exec(hyperlinks[i].href)
+          if (match) {
+            const codeLocation = getCodeLocationFromMatchGroups(match)
+            registerLink(codeLocation, hyperlinks[i].href) // the href is the ID as set in handleTextEditLinks
+          }
+        }
+      }
+      logToVscode("Finished registering links")
+    } catch (err) {
+      errorToVscode(`Error handling register links: ${err}`)
+    }
+  }
+
+  const handleGoto = async (elementID) => {
+    try {
+      const elem = document.getElementById(elementID)
+      if (!elem) {
+        throw new Error(`Unable to find element with ID: ${elementID}`)
+      }
+      const timeoutMS = 3000
+      const blinkGotoClassName = `blink-goto`
+      elem.scrollIntoView({ block: `center` })
+      elem.classList.add(blinkGotoClassName)
+      setTimeout(() => {
+        elem.classList.remove(blinkGotoClassName)
+      }, timeoutMS)
+    } catch (err) {
+      errorToVscode(`Error handling goto: ${err}`)
     }
   }
 
@@ -148,29 +222,53 @@
         })
       }
 
-      const vscodeAPI = acquireVsCodeApi()
       PDFViewerApplication.open(config.path)
       PDFViewerApplication.initializedPromise.then(() => {
         listenToSettingsChanges()
         PDFViewerApplication.eventBus.on("pagesinit", () => {
+          logToVscode("pagesinit")
           documentReloading = true
         })
         PDFViewerApplication.eventBus.on("textlayerrendered", () => {
           // console.log("textlayerrendered")
           if (documentReloading) {
-            // This portion is fired every time the pdf is changed AND loaded successfully
+            logToVscode("documentReloading")
+            // This portion is fired every time the pdf is changed AND loaded successfully.
             // just always close the sidebar--it's super annoying to maintain it.
             // https://github.com/lhl2617/VSLilyPond-PDF-preview/issues/22
             PDFViewerApplication.pdfSidebar.close()
-            handleTextEditLinks(vscodeAPI)
+            // clear the linkRepository -- waits for "link-register-ready" to register links
+            vscodeAPI.postMessage({ type: "clear-links" })
+            logToVscode("Sent clear-links")
+            // handle textedit links
+            handleTextEditLinks()
+            // apply settings
             applySettings()
             // MUST BE AFTER APPLYING SETTINGS
             documentReloading = false
           }
         })
       })
-      window.addEventListener("message", function () {
-        window.PDFViewerApplication.open(config.path)
+      window.addEventListener("message", (e) => {
+        const message = e.data
+        const type = message.type
+        // console.log(JSON.stringify(message))
+        switch (type) {
+          case "reload":
+            // this is not sent by vscode, but is a builtin
+            logToVscode("reload")
+            window.PDFViewerApplication.open(config.path)
+            break
+          case "goto":
+            handleGoto(message.elementID)
+            break
+          case "link-register-ready":
+            logToVscode("Received link-register-ready")
+            handleRegisterLinks()
+            break
+          default:
+            logToVscode(`Ignoring unknown message: ${JSON.stringify(message)}`)
+        }
       })
     },
     { once: true }
