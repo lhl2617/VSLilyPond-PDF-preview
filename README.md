@@ -29,11 +29,9 @@ If you have multiple PDF previewer extensions, make sure that you choose `LilyPo
 
 - Settings: See [docs/SETTINGS.md](docs/SETTINGS.md)
 
-## Issues & FAQ
+## Issues
 
 Please submit issues in the [GitHub repository](https://github.com/lhl2617/VSLilyPond-PDF-preview).
-
-See the FAQ at [docs/FAQ.md](docs/FAQ.md).
 
 ## Contributing
 
