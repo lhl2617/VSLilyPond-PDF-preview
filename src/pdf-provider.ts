@@ -1,7 +1,12 @@
 import * as vscode from "vscode"
 import { GoToPDFLocationHandler } from "./pdf-goto"
 import { PdfPreview } from "./pdf-preview"
-import { PDFLocation, VSCodeWebviewGoToMessage } from "./types"
+import {
+  PDFLocation,
+  VSCodeWebviewGoToMessage,
+  VSCodeWebviewLinkRegisterReadyMessage,
+  WebviewVSCodeClearLinksMessage,
+} from "./types"
 
 export class PdfCustomProvider implements vscode.CustomReadonlyEditorProvider {
   public static readonly viewType = "lilypond.pdf.preview"
@@ -20,13 +25,26 @@ export class PdfCustomProvider implements vscode.CustomReadonlyEditorProvider {
     document: vscode.CustomDocument,
     webviewEditor: vscode.WebviewPanel
   ): Promise<void> {
+    const registerLinkMessageHandler =
+      this._goToPDFLocationHandler.handleRegisterLinkMessageForPdf(
+        document.uri.fsPath
+      )
+    const clearLinksMessageHandler = async (
+      _msg: WebviewVSCodeClearLinksMessage
+    ) => {
+      await this._goToPDFLocationHandler.clearLinksForPdf(document.uri.fsPath)
+      const msg: VSCodeWebviewLinkRegisterReadyMessage = {
+        type: "link-register-ready",
+      }
+      preview.postMessageToWebview(msg)
+    }
+
     const preview = new PdfPreview(
       this.extensionRoot,
       document.uri,
       webviewEditor,
-      this._goToPDFLocationHandler.handleRegisterLinkMessageForPdf(
-        document.uri.fsPath
-      )
+      registerLinkMessageHandler,
+      clearLinksMessageHandler
     )
     this._previews.add(preview)
     this.setActivePreview(preview)

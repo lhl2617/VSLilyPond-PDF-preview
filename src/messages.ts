@@ -2,10 +2,10 @@ import * as vscode from "vscode"
 import { extensionID } from "./consts"
 import { outputChannelName, outputToChannel } from "./output"
 import {
-  VSCodeWebviewMessage,
+  WebviewVSCodeClearLinksMessage,
   WebviewVSCodeErrorMessage,
+  WebviewVSCodeLogMessage,
   WebviewVSCodeMessage,
-  WebviewVSCodeMessageType,
   WebviewVSCodeRegisterLinkMessage,
   WebviewVSCodeTextEditMessage,
 } from "./types"
@@ -18,14 +18,18 @@ import {
 export class WebviewVSCodeMessageHandler {
   private readonly _textEditMessageHandler = new TextEditMessageHandler()
   private readonly _errorMessageHandler = new ErrorMessageHandler()
+  private readonly _logMessageHandler = new LogMessageHandler()
   private readonly _registerLinkMessageHandler: RegisterLinkMessageHandler
+  private readonly _clearLinksHandler: ClearLinksHandler
 
   constructor(
-    _handleRegisterLinkMessage: (msg: WebviewVSCodeRegisterLinkMessage) => any
+    _handleRegisterLinkMessage: (msg: WebviewVSCodeRegisterLinkMessage) => any,
+    _handleClearLinks: (msg: WebviewVSCodeClearLinksMessage) => any
   ) {
     this._registerLinkMessageHandler = new RegisterLinkMessageHandler(
       _handleRegisterLinkMessage
     )
+    this._clearLinksHandler = new ClearLinksHandler(_handleClearLinks)
   }
 
   public handleWebviewVSCodeMessage = async (msg: WebviewVSCodeMessage) => {
@@ -41,6 +45,13 @@ export class WebviewVSCodeMessageHandler {
         break
       case "error":
         this._errorMessageHandler.handle(msg as WebviewVSCodeErrorMessage)
+        break
+      case "clear-links":
+        this._clearLinksHandler.handle(msg as WebviewVSCodeClearLinksMessage)
+        break
+      case "log":
+        this._logMessageHandler.handle(msg as WebviewVSCodeLogMessage)
+        break
       default:
         vscode.window.showErrorMessage(
           `Something went wrong, see "${outputChannelName}" Output for more info.`
@@ -62,10 +73,15 @@ class ErrorMessageHandler {
     vscode.window.showErrorMessage(
       `Something went wrong, see "${outputChannelName}" Output for more info.`
     )
-    outputToChannel(`[ERROR]: ${msg}`, true)
+    outputToChannel(`[ERROR]: [WEBVIEW]: ${msg.errorMessage}`, true)
   }
 }
 
+class LogMessageHandler {
+  public handle = async (msg: WebviewVSCodeLogMessage) => {
+    outputToChannel(`[LOG]: [WEBVIEW]: ${msg.message}`)
+  }
+}
 class TextEditMessageHandler {
   private _lastActivatedDecorationType:
     | vscode.TextEditorDecorationType
@@ -109,4 +125,8 @@ class TextEditMessageHandler {
       outputToChannel(`[ERROR]: ${err}`, true)
     }
   }
+}
+
+class ClearLinksHandler {
+  constructor(public handle: (msg: WebviewVSCodeClearLinksMessage) => any) {}
 }

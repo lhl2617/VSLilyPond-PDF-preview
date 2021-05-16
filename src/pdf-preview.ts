@@ -3,7 +3,11 @@ import * as vscode from "vscode"
 import { extensionID } from "./consts"
 import { Disposable } from "./disposable"
 import { WebviewVSCodeMessageHandler } from "./messages"
-import { VSCodeWebviewMessage, WebviewVSCodeRegisterLinkMessage } from "./types"
+import {
+  VSCodeWebviewMessage,
+  WebviewVSCodeClearLinksMessage,
+  WebviewVSCodeRegisterLinkMessage,
+} from "./types"
 
 function escapeAttribute(value: string | vscode.Uri): string {
   return value.toString().replace(/"/g, "&quot;")
@@ -20,12 +24,14 @@ export class PdfPreview extends Disposable {
     private readonly extensionRoot: vscode.Uri,
     private readonly resource: vscode.Uri,
     private readonly webviewEditor: vscode.WebviewPanel,
-    registerLinkMessageHandler: (msg: WebviewVSCodeRegisterLinkMessage) => any
+    registerLinkMessageHandler: (msg: WebviewVSCodeRegisterLinkMessage) => any,
+    clearLinksMessageHandler: (msg: WebviewVSCodeClearLinksMessage) => any
   ) {
     super()
     this.fsPath = resource.fsPath
     this._webviewVSCodeMessageHandler = new WebviewVSCodeMessageHandler(
-      registerLinkMessageHandler
+      registerLinkMessageHandler,
+      clearLinksMessageHandler
     )
     const resourceRoot = resource.with({
       path: resource.path.replace(/\/[^/]+?\.\w+$/, "/"),

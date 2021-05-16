@@ -1,5 +1,6 @@
 import { PDFLocation, WebviewVSCodeRegisterLinkMessage } from "./types"
 import * as vscode from "vscode"
+import { outputToChannel } from "./output"
 
 type CursorInfo = {
   line: number // 1-indexed (LilyPond)
@@ -23,6 +24,25 @@ export class GoToPDFLocationHandler {
       }[]
     >
   > = {}
+
+  /**
+   * When a PDF is reloaded (due to recompilation) it is required to clear the links
+   * from a previous compilation, if there exists any
+   * @param pdfFsPath
+   */
+  public clearLinksForPdf = async (pdfFsPath: string) => {
+    outputToChannel(`[LOG]: Clearing links for ${pdfFsPath}`)
+    for (const codeFsPath in this._linkRepository) {
+      for (const lineStr in this._linkRepository[codeFsPath]) {
+        // https://github.com/microsoft/TypeScript/issues/32811
+        const lineNum = lineStr as unknown as number
+        this._linkRepository[codeFsPath][lineNum] = this._linkRepository[
+          codeFsPath
+        ][lineNum].filter((x) => x.pdfFsPath !== pdfFsPath)
+      }
+    }
+    outputToChannel(`[LOG]: Links cleared for ${pdfFsPath}`)
+  }
 
   public handleRegisterLinkMessageForPdf =
     (pdfFsPath: string) => async (msg: WebviewVSCodeRegisterLinkMessage) => {

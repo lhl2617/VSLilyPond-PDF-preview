@@ -37,11 +37,40 @@
         return -1
     }
   }
+  const vscodeAPI = acquireVsCodeApi()
+
+  const logToVscode = (message) => {
+    vscodeAPI.postMessage({
+      type: "log",
+      message: message,
+    })
+  }
+
+  const errorToVscode = (errorMessage) => {
+    vscodeAPI.postMessage({
+      type: "error",
+      errorMessage: errorMessage,
+    })
+  }
 
   const regexpTextEdit =
     /textedit:\/\/(?<filepath>.+):(?<lineStr>[0-9]+):(?<colStartStr>[0-9]+):(?<colEndStr>[0-9]+)/
 
-  const handleTextEditLinks = async (vscodeAPI) => {
+  const getCodeLocationFromMatchGroups = (match) => {
+    const { filepath, lineStr, colStartStr, colEndStr } = match.groups
+    const line = parseInt(lineStr)
+    const colStart = parseInt(colStartStr)
+    const colEnd = parseInt(colEndStr)
+    const codeLocation = {
+      filepath: filepath,
+      line: line,
+      colStart: colStart,
+      colEnd: colEnd,
+    }
+    return codeLocation
+  }
+
+  const handleTextEditLinks = async () => {
     const annotationLayerElems =
       document.getElementsByClassName("annotationLayer")
     for (const annotationsLayerElem of annotationLayerElems) {
@@ -55,6 +84,23 @@
         })
       }
 
+      for (var i = 0; i < hyperlinks.length; i++) {
+        const match = regexpTextEdit.exec(hyperlinks[i].href)
+        if (match) {
+          const codeLocation = getCodeLocationFromMatchGroups(match)
+          hyperlinks[i].title = "Open in VSCode"
+          hyperlinks[i].onclick = handleOnClick(codeLocation)
+        }
+      }
+    }
+    logToVscode("Finished handling textedits")
+  }
+
+  const handleRegisterLinks = async () => {
+    const annotationLayerElems =
+      document.getElementsByClassName("annotationLayer")
+    for (const annotationsLayerElem of annotationLayerElems) {
+      const hyperlinks = annotationsLayerElem.getElementsByTagName("a")
       const registerLink = async (codeLocation, pdfLocation) => {
         vscodeAPI.postMessage({
           type: "register-link",
@@ -66,23 +112,13 @@
       for (var i = 0; i < hyperlinks.length; i++) {
         const match = regexpTextEdit.exec(hyperlinks[i].href)
         if (match) {
-          const { filepath, lineStr, colStartStr, colEndStr } = match.groups
-          const line = parseInt(lineStr)
-          const colStart = parseInt(colStartStr)
-          const colEnd = parseInt(colEndStr)
-          const codeLocation = {
-            filepath: filepath,
-            line: line,
-            colStart: colStart,
-            colEnd: colEnd,
-          }
+          const codeLocation = getCodeLocationFromMatchGroups(match)
           const pdfLocation = hyperlinks[i].getBoundingClientRect()
-          hyperlinks[i].title = "Open in VSCode"
-          hyperlinks[i].onclick = handleOnClick(codeLocation)
           registerLink(codeLocation, pdfLocation)
         }
       }
     }
+    logToVscode("Finished registering links")
   }
 
   /**
@@ -160,7 +196,6 @@
         })
       }
 
-      const vscodeAPI = acquireVsCodeApi()
       PDFViewerApplication.open(config.path)
       PDFViewerApplication.initializedPromise.then(() => {
         listenToSettingsChanges()
@@ -170,11 +205,17 @@
         PDFViewerApplication.eventBus.on("textlayerrendered", () => {
           // console.log("textlayerrendered")
           if (documentReloading) {
+            logToVscode("documentReloading")
             // This portion is fired every time the pdf is changed AND loaded successfully
             // just always close the sidebar--it's super annoying to maintain it.
             // https://github.com/lhl2617/VSLilyPond-PDF-preview/issues/22
             PDFViewerApplication.pdfSidebar.close()
-            handleTextEditLinks(vscodeAPI)
+            // clear the linkRepository -- waits for "link-register-ready" to register links
+            vscodeAPI.postMessage({ type: "clear-links" })
+            logToVscode("Sent clear-links")
+            // handle textedit links
+            handleTextEditLinks()
+            // apply settings
             applySettings()
             // MUST BE AFTER APPLYING SETTINGS
             documentReloading = false
@@ -186,6 +227,9 @@
         const type = message.type
         if (type === "goto") {
           console.log(`Received goto: ${JSON.stringify(message)}`)
+        } else if (type === "link-register-ready") {
+          logToVscode("Received link-register-ready")
+          handleRegisterLinks()
         } else {
           vscodeAPI.postMessage({
             type: "error",
