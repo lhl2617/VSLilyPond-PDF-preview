@@ -106,7 +106,7 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run docs:gen && npm run compile",
-    "compile": "tsc -p ./",
+    "compile": "npm run pdfjs:patch && tsc -p ./",
     "watch": "tsc -watch -p ./",
     "lint": "eslint src --ext ts",
     "docs:gen": "ts-node ./src/scripts/docs-gen/main.ts",
