@@ -234,23 +234,27 @@
           logToVscode("pagesinit")
           documentReloading = true
         })
-        PDFViewerApplication.eventBus.on("textlayerrendered", () => {
-          // console.log("textlayerrendered")
+        PDFViewerApplication.eventBus.on("textlayerrendered", (e) => {
           if (documentReloading) {
-            logToVscode("documentReloading")
-            // This portion is fired every time the pdf is changed AND loaded successfully.
             // just always close the sidebar--it's super annoying to maintain it.
             // https://github.com/lhl2617/VSLilyPond-PDF-preview/issues/22
             PDFViewerApplication.pdfSidebar.close()
+            // apply settings
+            applySettings()
+            // MUST BE AFTER APPLYING SETTINGS
+            documentReloading = false
+          }
+          // TODO:- this is fully hacky.
+          const allPagesLoaded =
+            e.pageNumber === PDFViewerApplication.pagesCount
+          if (allPagesLoaded) {
+            logToVscode("allPagesLoaded")
+            // This portion is fired every time the pdf is changed AND FULLY loaded successfully.
             // clear the linkRepository -- waits for "link-register-ready" to register links
             vscodeAPI.postMessage({ type: "clear-links" })
             logToVscode("Sent clear-links")
             // handle textedit links
             handleTextEditLinks()
-            // apply settings
-            applySettings()
-            // MUST BE AFTER APPLYING SETTINGS
-            documentReloading = false
           }
         })
       })
