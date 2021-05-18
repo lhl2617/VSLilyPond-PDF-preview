@@ -231,7 +231,6 @@
       .then(() => {
         listenToSettingsChanges()
         PDFViewerApplication.eventBus.on("pagesinit", () => {
-          console.log(`3`)
           logToVscode("pagesinit")
           documentReloading = true
         })
@@ -256,7 +255,7 @@
         })
       })
       .catch((err) => {
-        console.error(err)
+        console.warn(err)
       })
     window.addEventListener("message", (e) => {
       const message = e.data
