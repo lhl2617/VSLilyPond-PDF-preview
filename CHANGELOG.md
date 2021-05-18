@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.2.3
+- Fix [#35](https://github.com/lhl2617/VSLilyPond-PDF-preview/issues/35)
+  - Focus code with point on click even with already visible text editor
+
 ## 0.2.2
 - Hack to fix [#28](https://github.com/lhl2617/VSLilyPond-PDF-preview/issues/28)
   - Load the whole PDF forcefully
