@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.2.2
+- Hack to fix [#28](https://github.com/lhl2617/VSLilyPond-PDF-preview/issues/28)
+  - Load the whole PDF forcefully
+
 ## 0.2.1
 - Update dependencies
 - Fix issue #27: PDF Preview fails silently sometimes upon startup
