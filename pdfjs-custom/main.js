@@ -162,68 +162,73 @@
     }
   }
 
-  window.addEventListener(
-    "load",
-    () => {
-      const config = loadConfig()
+  const handleLoad = async () => {
+    const config = loadConfig()
 
-      let settings = shimSettingsFromConfigSettings(config.defaults)
-      let documentReloading = false
+    let settings = shimSettingsFromConfigSettings(config.defaults)
+    let documentReloading = false
 
-      const applySettings = () => {
-        // console.log(`Applying settings: ${JSON.stringify(settings)}`)
-        PDFViewerApplication.pdfCursorTools.switchTool(settings.cursor)
-        PDFViewerApplication.pdfViewer.currentScaleValue = settings.scale
-        PDFViewerApplication.pdfViewer.scrollMode = settings.scrollMode
-        PDFViewerApplication.pdfViewer.spreadMode = settings.spreadMode
-        PDFViewerApplication.pdfViewer.pagesRotation = settings.rotation
-        document.getElementById("viewerContainer").scrollTop =
-          settings.scrollTop
-        document.getElementById("viewerContainer").scrollLeft =
-          settings.scrollLeft
-      }
+    const applySettings = () => {
+      // console.log(`Applying settings: ${JSON.stringify(settings)}`)
+      PDFViewerApplication.pdfCursorTools.switchTool(settings.cursor)
+      PDFViewerApplication.pdfViewer.currentScaleValue = settings.scale
+      PDFViewerApplication.pdfViewer.scrollMode = settings.scrollMode
+      PDFViewerApplication.pdfViewer.spreadMode = settings.spreadMode
+      PDFViewerApplication.pdfViewer.pagesRotation = settings.rotation
+      document.getElementById("viewerContainer").scrollTop = settings.scrollTop
+      document.getElementById("viewerContainer").scrollLeft =
+        settings.scrollLeft
+    }
 
-      const listenToSettingsChanges = () => {
-        PDFViewerApplication.eventBus.on("updateviewarea", () => {
-          const scrollTop = document.getElementById("viewerContainer").scrollTop
-          const scrollLeft =
-            document.getElementById("viewerContainer").scrollLeft
-          if (!documentReloading) {
-            // check for !documentReloading is required because if the PDF changed (e.g. due to recompilation),
-            // updateviewarea gets called with reset settings.
-            // console.log("updateviewarea")
-            settings = {
-              ...settings,
-              scale: PDFViewerApplication.pdfViewer.currentScaleValue,
-              scrollTop,
-              scrollLeft,
-              cursor: PDFViewerApplication.pdfCursorTools.activeTool,
-              scrollMode: PDFViewerApplication.pdfViewer.scrollMode,
-              spreadMode: PDFViewerApplication.pdfViewer.spreadMode,
-            }
-            // console.log(JSON.stringify(settings))
-          }
-        })
-        PDFViewerApplication.eventBus.on("rotatecw", () => {
-          // console.log("rotatecw")
+    const listenToSettingsChanges = () => {
+      PDFViewerApplication.eventBus.on("updateviewarea", () => {
+        const scrollTop = document.getElementById("viewerContainer").scrollTop
+        const scrollLeft = document.getElementById("viewerContainer").scrollLeft
+        if (!documentReloading) {
+          // check for !documentReloading is required because if the PDF changed (e.g. due to recompilation),
+          // updateviewarea gets called with reset settings.
+          // console.log("updateviewarea")
           settings = {
             ...settings,
-            rotation: (settings.rotation + 90) % 360,
+            scale: PDFViewerApplication.pdfViewer.currentScaleValue,
+            scrollTop,
+            scrollLeft,
+            cursor: PDFViewerApplication.pdfCursorTools.activeTool,
+            scrollMode: PDFViewerApplication.pdfViewer.scrollMode,
+            spreadMode: PDFViewerApplication.pdfViewer.spreadMode,
           }
           // console.log(JSON.stringify(settings))
-        })
-        PDFViewerApplication.eventBus.on("rotateccw", () => {
-          // console.log("rotateccw")
-          settings = {
-            ...settings,
-            rotation: (settings.rotation - 90) % 360,
-          }
-          // console.log(JSON.stringify(settings))
-        })
-      }
+        }
+      })
+      PDFViewerApplication.eventBus.on("rotatecw", () => {
+        // console.log("rotatecw")
+        settings = {
+          ...settings,
+          rotation: (settings.rotation + 90) % 360,
+        }
+        // console.log(JSON.stringify(settings))
+      })
+      PDFViewerApplication.eventBus.on("rotateccw", () => {
+        // console.log("rotateccw")
+        settings = {
+          ...settings,
+          rotation: (settings.rotation - 90) % 360,
+        }
+        // console.log(JSON.stringify(settings))
+      })
+    }
 
-      PDFViewerApplication.open(config.path)
-      PDFViewerApplication.initializedPromise.then(() => {
+    while (true) {
+      try {
+        await PDFViewerApplication.open(config.path)
+        break
+      } catch (err) {
+        logToVscode(`[WARNING]: Open failed, retrying`)
+        console.warn(err)
+      }
+    }
+    PDFViewerApplication.initializedPromise
+      .then(() => {
         listenToSettingsChanges()
         PDFViewerApplication.eventBus.on("pagesinit", () => {
           logToVscode("pagesinit")
@@ -249,30 +254,33 @@
           }
         })
       })
-      window.addEventListener("message", (e) => {
-        const message = e.data
-        const type = message.type
-        // console.log(JSON.stringify(message))
-        switch (type) {
-          case "reload":
-            // this is not sent by vscode, but is a builtin
-            logToVscode("reload")
-            window.PDFViewerApplication.open(config.path)
-            break
-          case "goto":
-            handleGoto(message.elementID)
-            break
-          case "link-register-ready":
-            logToVscode("Received link-register-ready")
-            handleRegisterLinks()
-            break
-          default:
-            logToVscode(`Ignoring unknown message: ${JSON.stringify(message)}`)
-        }
+      .catch((err) => {
+        console.warn(err)
       })
-    },
-    { once: true }
-  )
+    window.addEventListener("message", (e) => {
+      const message = e.data
+      const type = message.type
+      // console.log(JSON.stringify(message))
+      switch (type) {
+        case "reload":
+          // this is not sent by vscode, but is a builtin
+          logToVscode("reload")
+          window.PDFViewerApplication.open(config.path)
+          break
+        case "goto":
+          handleGoto(message.elementID)
+          break
+        case "link-register-ready":
+          logToVscode("Received link-register-ready")
+          handleRegisterLinks()
+          break
+        default:
+          logToVscode(`Ignoring unknown message: ${JSON.stringify(message)}`)
+      }
+    })
+  }
+
+  window.addEventListener("load", handleLoad, { once: true })
 
   window.onerror = function () {
     const msg = document.createElement("body")

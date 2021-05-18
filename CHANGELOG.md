@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.2.1
+- Update dependencies
+- Fix issue #27: PDF Preview fails silently sometimes upon startup
+  - Naively retry to open in fail-prone area
+
 ## 0.2.0
 - Implement issue #7: Goto from source code to PDF
 - Code refactors
