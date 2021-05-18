@@ -36,7 +36,6 @@ console.log(
 )
 
 // Make textedit: a valid protocol in _isValidProtocol for pdf.js and pdf.worker.js
-// This step is not idempotent, so check if the file has the textedit string in it first
 const pdfjsPdfjsPath = path.join(pdfjsPath, "build", "pdf.js")
 const pdfjsPdfjsWorkerPath = path.join(pdfjsPath, "build", "pdf.worker.js")
 console.log(
