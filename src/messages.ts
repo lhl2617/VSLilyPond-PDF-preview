@@ -104,6 +104,12 @@ class TextEditMessageHandler {
         filepath
       )
       textEditor.revealRange(selectionRange)
+      // give the editor focus
+      vscode.window.showTextDocument(
+        textEditor.document,
+        textEditor.viewColumn,
+        false
+      )
       textEditor.selection = selection
       if (this._lastActivatedDecorationType) {
         // clear the last one if not cleared
