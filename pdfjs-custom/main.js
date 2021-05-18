@@ -218,7 +218,15 @@
       })
     }
 
-    PDFViewerApplication.open(config.path)
+    while (true) {
+      try {
+        await PDFViewerApplication.open(config.path)
+        break
+      } catch (err) {
+        logToVscode(`[WARNING]: Open failed, retrying`)
+        console.warn(err)
+      }
+    }
     PDFViewerApplication.initializedPromise
       .then(() => {
         listenToSettingsChanges()
