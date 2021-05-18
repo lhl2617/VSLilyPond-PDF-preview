@@ -133,6 +133,6 @@
     "typescript": "^4.1.3"
   },
   "dependencies": {
-    "pdfjs-dist-viewer-min": "^2.4.456"
+    "pdfjs-dist-viewer-min": "^2.8.335"
   }
 }
