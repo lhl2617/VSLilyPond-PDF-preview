@@ -3,13 +3,8 @@ import * as vscode from "vscode"
 import { extensionID } from "./consts"
 import { Disposable } from "./disposable"
 import { WebviewVSCodeMessageHandler } from "./messages"
-import {
-  VSCodeWebviewMessage,
-  WebviewVSCodeClearLinksMessage,
-  WebviewVSCodeRegisterLinkMessage,
-} from "./types"
 
-function escapeAttribute(value: string | vscode.Uri): string {
+const escapeAttribute = (value: string | vscode.Uri): string => {
   return value.toString().replace(/"/g, "&quot;")
 }
 
@@ -127,9 +122,9 @@ export class PdfPreview extends Disposable {
     }
 
     const config = vscode.workspace.getConfiguration(extensionID)
-    const settings = {
+    const pdfConfig: PDFViewerConfig = {
       path: docPath.toString(),
-      defaults: {
+      userSettings: {
         cursor: config.get("general.cursor") as string,
         scale: config.get("general.scale") as string,
         scrollMode: config.get("general.scrollMode") as string,
@@ -146,7 +141,7 @@ export class PdfPreview extends Disposable {
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src ${cspSource}; script-src 'unsafe-inline' ${cspSource}; style-src 'unsafe-inline' ${cspSource}; img-src blob: data: ${cspSource};">
 <meta id="pdf-preview-config" data-config="${escapeAttribute(
-      JSON.stringify(settings)
+      JSON.stringify(pdfConfig)
     )}">
 <title>PDF.js viewer</title>
 <link rel="resource" type="application/l10n" href="${resolveAsPdfJsDistUri(
@@ -155,8 +150,8 @@ export class PdfPreview extends Disposable {
       "locale.properties"
     )}">
 <link rel="stylesheet" href="${resolveAsPdfJsDistUri("web", "viewer.css")}">
-<link rel="stylesheet" href="${resolveAsUri("pdfjs-custom", "pdf.css")}">
-<script src="${resolveAsUri("pdfjs-custom", "main.js")}"></script>
+<link rel="stylesheet" href="${resolveAsUri("out", "pdfjs-custom", "pdf.css")}">
+<script src="${resolveAsUri("out", "pdfjs-custom", "main.js")}"></script>
 <script src="${resolveAsPdfJsDistUri("build", "pdf.js")}"></script>
 <script src="${resolveAsPdfJsDistUri("build", "pdf.worker.js")}"></script>
 <!--This is named differently from the mozilla builds (viewer.js)-->

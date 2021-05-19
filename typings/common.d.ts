@@ -1,35 +1,38 @@
 // =================
 // Webview -> VSCode
 // =================
-export type WebviewVSCodeMessage = Required<{ type: WebviewVSCodeMessageType }>
+type WebviewVSCodeMessage = {
+  type: WebviewVSCodeMessageType
+  [key: string]: any
+}
 
-export type WebviewVSCodeMessageType =
+type WebviewVSCodeMessageType =
   | "textedit"
   | "register-link"
   | "error"
   | "clear-links"
   | "log"
 
-export type WebviewVSCodeTextEditMessage = {
+type WebviewVSCodeTextEditMessage = {
   type: "textedit"
   codeLocation: LilyPondCodeLocation
 }
 
-export type WebviewVSCodeRegisterLinkMessage = {
+type WebviewVSCodeRegisterLinkMessage = {
   type: "register-link"
 } & RegisterLinkContents
 
 // Webview on reload will tell VSCode to clear the linkRepository for goto (code -> score)
-export type WebviewVSCodeClearLinksMessage = {
+type WebviewVSCodeClearLinksMessage = {
   type: "clear-links"
 }
 
-export type WebviewVSCodeErrorMessage = {
+type WebviewVSCodeErrorMessage = {
   type: "error"
   errorMessage: string
 }
 
-export type WebviewVSCodeLogMessage = {
+type WebviewVSCodeLogMessage = {
   type: "log"
   message: string
 }
@@ -37,35 +40,54 @@ export type WebviewVSCodeLogMessage = {
 // =================
 // VSCode -> Webview
 // =================
-export type VSCodeWebviewMessage = Required<{ type: VSCodeWebviewMessageType }>
+type VSCodeWebviewMessage = {
+  type: VSCodeWebviewMessageType
+  [key: string]: any
+}
 
-export type VSCodeWebviewMessageType = "goto" | "link-register-ready"
+type VSCodeWebviewMessageType = "reload" | "goto" | "link-register-ready"
 
-export type VSCodeWebviewGoToMessage = {
+type VSCodeWebviewReloadMessage = {
+  type: "reload"
+}
+
+type VSCodeWebviewGoToMessage = {
   type: "goto"
   elementID: string
 }
 
 // Sent by VSCode to webview when VSCode is ready for links (after clearing them via the clear-links message)
-export type VSCodeWebviewLinkRegisterReadyMessage = {
+type VSCodeWebviewLinkRegisterReadyMessage = {
   type: "link-register-ready"
 }
 
 // =============
 // Utility types
 // =============
-export type LilyPondCodeLocation = {
+type LilyPondCodeLocation = {
   filepath: LilyPondCodeFilePath
 } & LilyPondFileCodeLocation
 
-export type LilyPondFileCodeLocation = {
+type LilyPondFileCodeLocation = {
   line: number // 1-indexed: need to decrement if use in VSCode
   col: number
 }
 
-export type LilyPondCodeFilePath = string
+type LilyPondCodeFilePath = string
 
-export type RegisterLinkContents = {
+type RegisterLinkContents = {
   codeLocation: LilyPondCodeLocation
   elementID: string
+}
+
+type PDFViewerConfig = {
+  path: string
+  userSettings: PDFViewerUserSettings
+}
+
+type PDFViewerUserSettings = {
+  cursor: string
+  scale: string
+  scrollMode: string
+  spreadMode: string
 }
