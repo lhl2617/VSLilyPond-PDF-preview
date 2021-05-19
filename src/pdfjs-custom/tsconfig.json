@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "outDir": "../../out/pdfjs-custom",
+    "lib": ["dom", "DOM.Iterable"],
+    "inlineSourceMap": true,
+  },
+  "include": ["."],
+  "files": ["../../typings/common.d.ts"]
+}
