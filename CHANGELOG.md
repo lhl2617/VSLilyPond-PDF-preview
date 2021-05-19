@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.2.5
+- Code refactor
+  - Use transpiled TypeScript for webview
+
 ## 0.2.4
 - Fix [#37](https://github.com/lhl2617/VSLilyPond-PDF-preview/issues/37)
   - Place cursor at beginning of backward point-and-click selection
