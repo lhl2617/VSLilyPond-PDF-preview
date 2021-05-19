@@ -10,8 +10,6 @@ import {
   WebviewVSCodeTextEditMessage,
 } from "./types"
 import {
-  lilyPondCodeLocationToRange,
-  lilyPondCodeLocationToSelection,
   getTextEditorFromFilePathWithVisiblePriority,
   lilyPondCodeLocationToWordRange,
 } from "./utils"
