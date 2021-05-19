@@ -1,11 +1,6 @@
 import * as vscode from "vscode"
 import { GoToPDFLocationHandler } from "./pdf-goto"
 import { PdfPreview } from "./pdf-preview"
-import {
-  VSCodeWebviewGoToMessage,
-  VSCodeWebviewLinkRegisterReadyMessage,
-  WebviewVSCodeClearLinksMessage,
-} from "./types"
 
 export class PdfCustomProvider implements vscode.CustomReadonlyEditorProvider {
   public static readonly viewType = "lilypond.pdf.preview"

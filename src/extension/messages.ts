@@ -2,14 +2,6 @@ import * as vscode from "vscode"
 import { extensionID } from "./consts"
 import { outputChannelName, outputToChannel } from "./output"
 import {
-  WebviewVSCodeClearLinksMessage,
-  WebviewVSCodeErrorMessage,
-  WebviewVSCodeLogMessage,
-  WebviewVSCodeMessage,
-  WebviewVSCodeRegisterLinkMessage,
-  WebviewVSCodeTextEditMessage,
-} from "./types"
-import {
   getTextEditorFromFilePathWithVisiblePriority,
   lilyPondCodeLocationToWordRange,
 } from "./utils"

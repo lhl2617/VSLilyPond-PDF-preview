@@ -1,4 +1,3 @@
-import { LilyPondCodeLocation } from "./types"
 import * as vscode from "vscode"
 import { outputToChannel } from "./output"
 

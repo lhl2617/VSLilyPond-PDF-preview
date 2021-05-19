@@ -1,4 +1,3 @@
-import { WebviewVSCodeRegisterLinkMessage } from "./types"
 import * as vscode from "vscode"
 import { outputToChannel } from "./output"
 
@@ -16,6 +15,11 @@ export class GoToPDFLocationHandler {
       // This should be a nice ordered set for O(log n) lookups,
       // but in practice a line should not have many symbols, so O(n)
       // should be fine.
+      // NOTE: This is fine--when this is populated, there is no guarantee that it comes
+      // in sorted order--insertion would be O(log n) instead of O(1).
+      // Insertion occurs closely after a computationally intensive state (holding the entire PDF)
+      // and comes in a _large_ chunk of all notes.
+      // So, let's keep this. Good and typed sorted-array stuff isn't easy to find too.
       {
         col: number
         elementID: string
