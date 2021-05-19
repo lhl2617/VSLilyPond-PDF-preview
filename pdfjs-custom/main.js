@@ -54,18 +54,16 @@
   }
 
   const regexpTextEdit =
-    /textedit:\/\/(?<filepath>.+):(?<lineStr>[0-9]+):(?<colStartStr>[0-9]+):(?<colEndStr>[0-9]+)/
+    /textedit:\/\/(?<filepath>.+):(?<lineStr>[0-9]+):(?<colStr>[0-9]+):(?<unused>[0-9]+)/
 
   const getCodeLocationFromMatchGroups = (match) => {
-    const { filepath, lineStr, colStartStr, colEndStr } = match.groups
+    const { filepath, lineStr, colStr } = match.groups
     const line = parseInt(lineStr)
-    const colStart = parseInt(colStartStr)
-    const colEnd = parseInt(colEndStr)
+    const col = parseInt(colStr)
     const codeLocation = {
       filepath: filepath,
       line: line,
-      colStart: colStart,
-      colEnd: colEnd,
+      col: col,
     }
     return codeLocation
   }

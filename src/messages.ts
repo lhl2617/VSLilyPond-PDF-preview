@@ -13,6 +13,7 @@ import {
   lilyPondCodeLocationToRange,
   lilyPondCodeLocationToSelection,
   getTextEditorFromFilePathWithVisiblePriority,
+  lilyPondCodeLocationToWordRange,
 } from "./utils"
 
 export class WebviewVSCodeMessageHandler {
@@ -98,11 +99,18 @@ class TextEditMessageHandler {
       ) as number
       const { codeLocation } = msg
       const { filepath } = codeLocation
-      const selection = lilyPondCodeLocationToSelection(codeLocation)
-      const selectionRange = lilyPondCodeLocationToRange(codeLocation)
       const textEditor = await getTextEditorFromFilePathWithVisiblePriority(
         filepath
       )
+      const selectionRange = lilyPondCodeLocationToWordRange(
+        codeLocation,
+        textEditor.document
+      )
+      const selection = new vscode.Selection(
+        selectionRange.start,
+        selectionRange.start
+      )
+
       textEditor.revealRange(selectionRange)
       // give the editor focus
       vscode.window.showTextDocument(

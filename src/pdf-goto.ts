@@ -17,8 +17,7 @@ export class GoToPDFLocationHandler {
       // but in practice a line should not have many symbols, so O(n)
       // should be fine.
       {
-        colStart: number
-        colEnd: number
+        col: number
         elementID: string
         pdfFsPath: string
       }[]
@@ -47,7 +46,7 @@ export class GoToPDFLocationHandler {
   public handleRegisterLinkMessageForPdf =
     (pdfFsPath: string) => async (msg: WebviewVSCodeRegisterLinkMessage) => {
       const { codeLocation, elementID } = msg
-      const { filepath, line, colStart, colEnd } = codeLocation
+      const { filepath, line, col } = codeLocation
       const uri = vscode.Uri.file(filepath)
       const { fsPath } = uri
       if (!(fsPath in this._linkRepository)) {
@@ -57,8 +56,7 @@ export class GoToPDFLocationHandler {
         this._linkRepository[fsPath][line] = []
       }
       this._linkRepository[fsPath][line].push({
-        colStart,
-        colEnd,
+        col,
         elementID,
         pdfFsPath,
       })
@@ -91,24 +89,13 @@ export class GoToPDFLocationHandler {
 
   public getPDFPathAndElementIDFromCursor = async () => {
     const cursorInfo = this._getCursorInfo()
-    const { fsPath, line, col } = cursorInfo
+    const { fsPath, line } = cursorInfo
+    const targetCol = cursorInfo.col
     if (fsPath in this._linkRepository) {
       const fsPathLinkRepo = this._linkRepository[fsPath]
       if (line in fsPathLinkRepo) {
         const lineLinkRepo = fsPathLinkRepo[line]
-        /*
-        // now iterate through and see if col lies in the colStart -- colEnd range
-        for (const { colStart, colEnd, elementID, pdfFsPath } of lineLinkRepo) {
-          if (colStart <= col && col <= colEnd) {
-            return {
-              pdfFsPath,
-              elementID,
-            }
-          }
-        }
-        */
-        // The below block is problematic because colEnd is always col + 1
-        // In fact I think it's not significant--thus, just find the closest element to colStart
+        // Find the closest element after col
         let delta = Number.MAX_SAFE_INTEGER
         let candidate:
           | {
@@ -116,14 +103,12 @@ export class GoToPDFLocationHandler {
               elementID: string
             }
           | undefined
-        for (const { colStart, elementID, pdfFsPath } of lineLinkRepo) {
-          if (col >= colStart) {
-            if (col - colStart < delta) {
-              delta = col - colStart
-              candidate = {
-                pdfFsPath,
-                elementID,
-              }
+        for (const { col, elementID, pdfFsPath } of lineLinkRepo) {
+          if (col >= targetCol && col - targetCol < delta) {
+            delta = col - targetCol
+            candidate = {
+              pdfFsPath,
+              elementID,
             }
           }
         }

@@ -60,8 +60,7 @@ export type LilyPondCodeLocation = {
 
 export type LilyPondFileCodeLocation = {
   line: number // 1-indexed: need to decrement if use in VSCode
-  colStart: number
-  colEnd: number
+  col: number
 }
 
 export type LilyPondCodeFilePath = string
