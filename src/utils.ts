@@ -1,23 +1,30 @@
 import { LilyPondCodeLocation } from "./types"
 import * as vscode from "vscode"
+import { outputToChannel } from "./output"
 
-export const lilyPondCodeLocationToSelection = (
-  codeLocation: LilyPondCodeLocation
-): vscode.Selection => {
-  const { line, colStart, colEnd } = codeLocation
-  const lineNum = line - 1
-  return new vscode.Selection(
-    new vscode.Position(lineNum, colStart),
-    new vscode.Position(lineNum, colEnd)
-  )
-}
-
-export const lilyPondCodeLocationToRange = (
-  codeLocation: LilyPondCodeLocation
+export const lilyPondCodeLocationToWordRange = (
+  codeLocation: LilyPondCodeLocation,
+  textDocument: vscode.TextDocument
 ): vscode.Range => {
-  const { line, colStart, colEnd } = codeLocation
+  const { line, col } = codeLocation
   const lineNum = line - 1
-  return new vscode.Range(lineNum, colStart, lineNum, colEnd)
+  const position = new vscode.Position(lineNum, col)
+  const range = textDocument.getWordRangeAtPosition(position, /[^\s-]+/)
+  if (!range) {
+    outputToChannel(
+      `[WARNING]: Can't get word range at position ${JSON.stringify(
+        position
+      )}, falling back to col + 1`
+    )
+    return new vscode.Range(position, new vscode.Position(lineNum, col + 1))
+  }
+  // force it to start at col
+  const rangeEnd = range.end
+  if (position.isAfterOrEqual(rangeEnd)) {
+    // fall back
+    return new vscode.Range(position, new vscode.Position(lineNum, col + 1))
+  }
+  return new vscode.Range(position, range.end)
 }
 
 /**

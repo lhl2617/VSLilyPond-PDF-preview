@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.2.4
+- Fix [#37](https://github.com/lhl2617/VSLilyPond-PDF-preview/issues/37)
+  - Place cursor at beginning of backward point-and-click selection
+- Select whole word whenever possible
+
 ## 0.2.3
 - Fix [#35](https://github.com/lhl2617/VSLilyPond-PDF-preview/issues/35)
   - Focus code with point on click even with already visible text editor

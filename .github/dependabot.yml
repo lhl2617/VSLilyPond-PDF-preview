@@ -8,3 +8,4 @@ updates:
     target-branch: dev
     ignore:
       - dependency-name: "@types/vscode"
+      - dependency-name: "pdfjs-dist-viewer-min"

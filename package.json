@@ -3,7 +3,7 @@
   "publisher": "lhl2617",
   "displayName": "LilyPond PDF Preview",
   "description": "Provides PDF Preview for LilyPond-generated PDFs. Supports point-and-click from PDF to source code.",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "engines": {
     "vscode": "^1.46.0"
   },
