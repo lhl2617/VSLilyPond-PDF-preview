@@ -138,10 +138,22 @@ const handleGoto = async (elementID: string) => {
   }
 }
 
+type PDFJSUserSettings = {
+  cursor: number
+  scale: string
+  scrollMode: number
+  spreadMode: number
+  rotation: number
+  scrollTop: number
+  scrollLeft: number
+}
+
 /**
  * From config to PDFJS compliant settings
  */
-const shimUserSettings = (settings: PDFViewerUserSettings) => {
+const shimUserSettings = (
+  settings: PDFViewerUserSettings
+): PDFJSUserSettings => {
   const cursorToolsStringToEnum = (name: string) => {
     if (name === "hand") {
       return 1
@@ -183,25 +195,26 @@ const shimUserSettings = (settings: PDFViewerUserSettings) => {
   }
 }
 
+const applySettings = (settings: PDFJSUserSettings) => {
+  // console.log(`Applying settings: ${JSON.stringify(settings)}`)
+  PDFViewerApplication.pdfCursorTools.switchTool(settings.cursor)
+  PDFViewerApplication.pdfViewer.currentScaleValue = settings.scale
+  PDFViewerApplication.pdfViewer.scrollMode = settings.scrollMode
+  PDFViewerApplication.pdfViewer.spreadMode = settings.spreadMode
+  PDFViewerApplication.pdfViewer.pagesRotation = settings.rotation
+  const viewerContainer = document.getElementById("viewerContainer")
+  if (viewerContainer) {
+    viewerContainer.scrollTop = settings.scrollTop
+    viewerContainer.scrollLeft = settings.scrollLeft
+  }
+}
+
 const handleLoad = async () => {
   const pdfConfig = loadConfig()
 
   let settings = shimUserSettings(pdfConfig.userSettings)
   let documentReloading = false
-
-  const applySettings = () => {
-    // console.log(`Applying settings: ${JSON.stringify(settings)}`)
-    PDFViewerApplication.pdfCursorTools.switchTool(settings.cursor)
-    PDFViewerApplication.pdfViewer.currentScaleValue = settings.scale
-    PDFViewerApplication.pdfViewer.scrollMode = settings.scrollMode
-    PDFViewerApplication.pdfViewer.spreadMode = settings.spreadMode
-    PDFViewerApplication.pdfViewer.pagesRotation = settings.rotation
-    const viewerContainer = document.getElementById("viewerContainer")
-    if (viewerContainer) {
-      viewerContainer.scrollTop = settings.scrollTop
-      viewerContainer.scrollLeft = settings.scrollLeft
-    }
-  }
+  let loadedPages: Set<number> = new Set()
 
   const listenToSettingsChanges = () => {
     PDFViewerApplication.eventBus.on("updateviewarea", () => {
@@ -258,6 +271,7 @@ const handleLoad = async () => {
       PDFViewerApplication.eventBus.on("pagesinit", () => {
         logToVscode("pagesinit")
         documentReloading = true
+        loadedPages = new Set()
       })
       PDFViewerApplication.eventBus.on(
         "textlayerrendered",
@@ -267,13 +281,14 @@ const handleLoad = async () => {
             // https://github.com/lhl2617/VSLilyPond-PDF-preview/issues/22
             PDFViewerApplication.pdfSidebar.close()
             // apply settings
-            applySettings()
+            applySettings(settings)
             // MUST BE AFTER APPLYING SETTINGS
             documentReloading = false
           }
-          // TODO:- this is fully hacky.
+          loadedPages.add(e.pageNumber)
+          console.log(`loaded ${e.pageNumber}`)
           const allPagesLoaded =
-            e.pageNumber === PDFViewerApplication.pagesCount
+            loadedPages.size === PDFViewerApplication.pagesCount
           if (allPagesLoaded) {
             logToVscode("allPagesLoaded")
             // This portion is fired every time the pdf is changed AND FULLY loaded successfully.
