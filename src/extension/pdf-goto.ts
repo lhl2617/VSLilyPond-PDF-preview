@@ -94,7 +94,7 @@ export class GoToPDFLocationHandler {
   public getPDFPathAndElementIDFromCursor = async () => {
     const cursorInfo = this._getCursorInfo()
     const { fsPath, line } = cursorInfo
-    const targetCol = cursorInfo.col
+    const cursorCol = cursorInfo.col
     if (fsPath in this._linkRepository) {
       const fsPathLinkRepo = this._linkRepository[fsPath]
       if (line in fsPathLinkRepo) {
@@ -108,8 +108,8 @@ export class GoToPDFLocationHandler {
             }
           | undefined
         for (const { col, elementID, pdfFsPath } of lineLinkRepo) {
-          if (col >= targetCol && col - targetCol < delta) {
-            delta = col - targetCol
+          if (cursorCol >= col && cursorCol - col < delta) {
+            delta = cursorCol - col
             candidate = {
               pdfFsPath,
               elementID,
