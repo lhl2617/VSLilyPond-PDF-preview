@@ -124,7 +124,7 @@
     "postinstall": "npm run pdfjs:patch"
   },
   "devDependencies": {
-    "@types/node": "^15.14.9",
+    "@types/node": "^16.7.10",
     "@types/vscode": "1.46.0",
     "@typescript-eslint/eslint-plugin": "^4.30.0",
     "@typescript-eslint/parser": "^4.30.0",
