@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.8
+- Fix [#110](https://github.com/lhl2617/VSLilyPond-PDF-preview/issues/110)
+
 ## 0.2.7
 - Update dependencies
 

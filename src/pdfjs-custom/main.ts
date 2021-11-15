@@ -43,7 +43,7 @@ const getCodeLocationFromMatchGroups = (match: TextEditRegExpMatchType) => {
   const line = parseInt(lineStr)
   const col = parseInt(colStr)
   const codeLocation = {
-    filepath: filepath,
+    filepath: decodeURIComponent(filepath),
     line: line,
     col: col,
   }
