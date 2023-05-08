@@ -66,6 +66,13 @@ export class PdfPreview extends Disposable {
       })
     )
     this._register(
+      watcher.onDidCreate((e) => {
+        if (e.toString() === this.resource.toString()) {
+          this.reload()
+        }
+      })
+    )
+    this._register(
       watcher.onDidDelete((e) => {
         if (e.toString() === this.resource.toString()) {
           this.webviewEditor.dispose()
